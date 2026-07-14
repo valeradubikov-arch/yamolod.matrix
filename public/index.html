@@ -1,0 +1,2882 @@
+
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Событийная матрица Школы Ямолод</title>
+  <style>
+    :root {
+      --accent: #B80B5C;
+      --accent-2: #FF7A45;
+      --violet: #8F4BD7;
+      --bg: #F7F7F8;
+      --surface: rgba(255,255,255,.82);
+      --surface-2: rgba(255,255,255,.64);
+      --text: #121217;
+      --muted: #6F6F7A;
+      --line: rgba(18,18,23,.10);
+      --shadow: 0 18px 44px rgba(20,20,30,.09);
+      --radius: 20px;
+      --sidebar: #101114;
+      --sidebar-text: #FFFFFF;
+    }
+    [data-theme="dark"] {
+      --bg: #0C0D10;
+      --surface: rgba(25,25,31,.82);
+      --surface-2: rgba(33,33,40,.66);
+      --text: #FFFFFF;
+      --muted: #B9B9C4;
+      --line: rgba(255,255,255,.13);
+      --shadow: 0 18px 48px rgba(0,0,0,.34);
+      --sidebar: #06070A;
+      --sidebar-text: #FFFFFF;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, Manrope, "Segoe UI", Arial, sans-serif;
+      background:
+        radial-gradient(circle at 8% 92%, color-mix(in srgb, var(--accent) 34%, transparent), transparent 24%),
+        radial-gradient(circle at 94% 4%, color-mix(in srgb, var(--accent-2) 28%, transparent), transparent 28%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .app { display: grid; grid-template-columns: 286px minmax(0,1fr); min-height: 100vh; width:100%; overflow-x:hidden; }
+    .sidebar {
+      position: sticky; top: 0; height: 100vh; overflow: auto;
+      padding: 32px 18px 22px;
+      color: var(--sidebar-text);
+      background:
+        radial-gradient(circle at 30% 100%, rgba(184,11,92,.68), transparent 28%),
+        radial-gradient(circle at 100% 10%, rgba(255,122,69,.30), transparent 28%),
+        linear-gradient(180deg, #0B0C0F, var(--sidebar));
+      border-right: 1px solid rgba(255,255,255,.08);
+      display:flex; flex-direction:column;
+    }
+    .brand { margin: 0 18px 34px; line-height: 1.04; letter-spacing: .08em; }
+    .brand-logo { width: 172px; height:auto; display:block; object-fit:contain; margin-bottom: 8px; }
+    .brand-main { font-size: 30px; font-weight: 900; }
+    .brand-sub { font-size: 12px; margin-top: 6px; opacity: .72; text-transform: uppercase; }
+    .sidebar-close { display:none; position:absolute; right:14px; top:14px; width:38px; height:38px; border:1px solid rgba(255,255,255,.16); border-radius:12px; background:rgba(255,255,255,.08); color:#fff; font-size:20px; cursor:pointer; }
+    .nav { display: grid; gap: 8px; }
+    .nav button {
+      width: 100%; border: 0; cursor: pointer; color: #fff; text-align: left;
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 16px; border-radius: 14px;
+      background: transparent; font-size: 15px; font-weight: 750;
+      transition: .22s ease;
+    }
+    .nav button:hover, .nav button.active {
+      background: linear-gradient(135deg, var(--accent), #C01668 62%, #E44375);
+      box-shadow: 0 12px 28px rgba(184,11,92,.34);
+    }
+    .ico {
+      width: 30px; height: 30px; border-radius: 10px;
+      display: inline-grid; place-items: center;
+      background: rgba(255,255,255,.10); flex: 0 0 auto;
+    }
+    .ico svg, .kpi-icon svg { width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+    .kpi-icon svg { width:22px; height:22px; }
+    .nav button.active .ico { background: rgba(255,255,255,.18); }
+    .sidebar-card {
+      margin-top: auto; margin-bottom: 8px; padding: 20px; border-radius: 18px;
+      background: linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+      flex: 0 0 auto;
+    }
+
+    @media (max-height: 760px) and (min-width: 981px) {
+      .sidebar { padding-top: 22px; }
+      .brand { margin-bottom: 22px; }
+      .nav { gap: 5px; }
+      .nav button { padding-top: 11px; padding-bottom: 11px; }
+      .sidebar-card { display:none; }
+    }
+    .main { padding: 24px 36px 34px; min-width: 0; width:100%; overflow-x:hidden; }
+    .topbar {
+      display: grid; grid-template-columns: 1fr minmax(360px, 700px) auto; gap: 22px; align-items: center;
+      padding-bottom: 22px; border-bottom: 1px solid var(--line);
+    }
+    h1 { margin: 0; font-size: 26px; line-height: 1.15; letter-spacing: -.03em; text-transform: uppercase; }
+    .subtitle { color: var(--muted); margin-top: 5px; font-size: 15px; }
+    .search-wrap {
+      display:flex; align-items:center; gap: 12px; padding: 0 18px;
+      height: 54px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface);
+      box-shadow: 0 8px 24px rgba(0,0,0,.04);
+    }
+    input, select, button { font: inherit; }
+    .search-wrap input {
+      border:0; outline:0; background:transparent; color:var(--text); width:100%; font-weight: 600;
+    }
+    .controls { display:flex; align-items:center; gap: 14px; }
+    .select-button, .user-pill {
+      height: 48px; border: 1px solid var(--line); border-radius: 15px; padding: 0 16px; background: var(--surface);
+      color: var(--text); display:flex; align-items:center; gap:10px; cursor:pointer;
+    }
+    .grid { display: grid; grid-template-columns: minmax(240px,280px) minmax(0, 1fr) minmax(300px,380px); gap: 20px; margin-top: 24px; align-items:start; }
+    .kpis { display:grid; grid-template-columns: repeat(6, minmax(150px, 1fr)); gap: 16px; margin-top: 24px; }
+    .card {
+      background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+      box-shadow: var(--shadow); backdrop-filter: blur(20px);
+    }
+    .kpi { min-height: 118px; padding: 20px; display:flex; justify-content:space-between; align-items:center; }
+    .kpi-title { font-size: 14px; font-weight: 800; color: var(--text); }
+    .kpi-value { font-size: 34px; font-weight: 930; margin-top: 8px; letter-spacing: -.04em; }
+    .kpi-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+    .kpi-icon {
+      width: 54px; height:54px; border-radius: 16px; display:grid; place-items:center; color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 14px 28px color-mix(in srgb, var(--accent) 22%, transparent);
+    }
+    .panel { padding: 20px; }
+    .panel-title { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+    .panel-title h2 { margin:0; font-size:17px; text-transform:uppercase; letter-spacing:.02em; }
+    .link { color: var(--accent); font-size: 13px; font-weight: 850; text-decoration:none; cursor: pointer; }
+    .filters { display:grid; gap: 16px; }
+    label { display:block; font-size:13px; font-weight:800; margin-bottom:8px; color: var(--text); }
+    select, .field {
+      width:100%; height: 44px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface-2);
+      color: var(--text); padding: 0 12px; outline: none;
+    }
+    .checkrow { display:flex; align-items:center; gap:10px; color: var(--muted); font-size:14px; margin: 11px 0; }
+    .btn {
+      height: 52px; border:0; border-radius: 14px; cursor:pointer; color:#fff; font-weight:900; width:100%;
+      background: linear-gradient(135deg, var(--accent), #CF1A68);
+      box-shadow: 0 14px 28px color-mix(in srgb, var(--accent) 28%, transparent);
+    }
+    .upcoming { display:flex; gap: 10px; overflow:auto; padding-bottom: 4px; max-width:100%; scroll-snap-type:x proximity; }
+    .event-mini {
+      appearance:none; color:var(--text); text-align:left; font:inherit; cursor:pointer;
+      min-width: 174px; padding: 13px; border-radius: 14px; border: 1px solid var(--line);
+      background: var(--surface-2); scroll-snap-align:start;
+    }
+    .date-badge { display:flex; gap:10px; align-items:center; }
+    .date-num { font-size: 28px; font-weight: 950; }
+    .date-month { font-size:12px; color: var(--muted); text-transform:uppercase; }
+    .mini-title { margin-top:8px; font-weight:900; font-size:14px; line-height:1.25; }
+    .mini-place { font-size:12px; color: var(--muted); margin-top:4px; }
+    .status { display:inline-flex; align-items:center; gap:6px; padding:5px 9px; border-radius:999px; font-size:12px; font-weight:800; margin-top:10px; background:rgba(48,183,122,.13); color:#2D9D6A; }
+    .dot { width:7px; height:7px; border-radius:999px; background: currentColor; }
+    .calendar-grid { display:grid; grid-template-columns: repeat(7, 1fr); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+    .dow, .day { min-height: 54px; padding: 10px; border-right:1px solid var(--line); border-bottom:1px solid var(--line); }
+    .dow { min-height:34px; font-size: 12px; color:var(--muted); font-weight:900; text-align:center; background: var(--surface-2); }
+    .day { background: color-mix(in srgb, var(--surface) 70%, transparent); }
+    .day-num { font-weight:850; font-size:14px; }
+    .marks { display:flex; gap:4px; flex-wrap:wrap; margin-top:8px; }
+    .mark { width:7px; height:7px; border-radius:99px; background:var(--accent); }
+    .events-list { display:grid; gap: 0; max-height: 605px; overflow:auto; }
+    .event-row {
+      display:grid; grid-template-columns: 108px 1fr auto; gap: 14px; padding: 14px 0;
+      border-bottom:1px solid var(--line); align-items:center;
+    }
+    .thumb {
+      width:108px; height:78px; border-radius: 13px; overflow:hidden;
+      background: linear-gradient(135deg, var(--accent), var(--violet), var(--accent-2));
+      display:grid; place-items:center; color:#fff; font-weight:950; text-align:center; padding: 10px;
+    }
+    .event-title { font-size: 16px; font-weight: 920; line-height: 1.25; }
+    .meta { display:flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; color: var(--muted); font-size: 13px; }
+    .round-btn { width: 38px; height:38px; border-radius:999px; border:1px solid var(--line); background: var(--surface-2); color: var(--text); cursor:pointer; }
+    .finance-number { font-size: 26px; font-weight: 950; margin: 4px 0 16px; }
+    .bar { height: 12px; background: var(--line); border-radius: 999px; overflow:hidden; }
+    .bar span { display:block; height:100%; width:55%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius:inherit; }
+    .donut {
+      width: 132px; height:132px; border-radius:50%;
+      background: conic-gradient(var(--accent) 0 32%, var(--violet) 32% 75%, var(--accent-2) 75% 100%);
+      margin:auto; position:relative;
+    }
+    .donut::after { content: attr(data-total) "\A всего"; white-space:pre; position:absolute; inset:26px; border-radius:50%; background: var(--surface); display:grid; place-items:center; text-align:center; font-weight:950; line-height:1.15; }
+    .legend { display:grid; gap:10px; margin-top: 15px; }
+    .legend-row { display:flex; justify-content:space-between; gap: 12px; color:var(--muted); font-size:13px; }
+    .legend b { color:var(--text); }
+    .settings-panel {
+      display:none; position: fixed; right: 24px; top: 86px; width: 320px; z-index: 20; padding: 18px;
+      background: var(--surface); border:1px solid var(--line); border-radius:20px; box-shadow: var(--shadow); backdrop-filter: blur(20px);
+    }
+    .settings-panel.show { display:block; }
+    .color-row { display:grid; grid-template-columns:1fr 52px; gap:12px; align-items:center; margin: 12px 0; }
+    input[type=color] { width:52px; height:40px; border:0; background:transparent; cursor:pointer; }
+    .loading { padding: 26px; text-align:center; color: var(--muted); font-weight:800; }
+    .mobile-menu { display:none; }
+    .page-grid { display:grid; grid-template-columns: 1fr 1.45fr; gap:20px; }
+    .sidebar-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:29; backdrop-filter: blur(4px); }
+    .sidebar-backdrop.show { display:block; }
+
+    /* v7 responsive stability fixes */
+    html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+    .main > * { min-width: 0; }
+    .grid > * { min-width: 0; }
+    .page-grid > * { min-width: 0; }
+    .event-title, .mini-title, .meta, .kpi-title { overflow-wrap: anywhere; word-break: normal; }
+    .controls { flex-wrap: wrap; justify-content: flex-end; }
+    .select-button { white-space: nowrap; }
+    .upcoming::-webkit-scrollbar, .events-list::-webkit-scrollbar { height: 8px; width: 8px; }
+    .upcoming::-webkit-scrollbar-thumb, .events-list::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--accent) 44%, transparent); border-radius: 999px; }
+
+    @media (max-width: 1600px) {
+      .app { grid-template-columns: 252px minmax(0,1fr); }
+      .sidebar { padding-left: 16px; padding-right: 16px; }
+      .brand-logo { width: 150px; }
+      .main { padding: 22px 28px 32px; }
+      .topbar { grid-template-columns: minmax(220px, .65fr) minmax(320px, 1fr) auto; gap: 16px; }
+      .kpis { grid-template-columns: repeat(3, minmax(170px, 1fr)); }
+      .grid { grid-template-columns: 280px minmax(0,1fr); }
+      .grid > aside:last-child { grid-column: 1 / -1; display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:20px; }
+      .grid > aside:last-child .card { margin-bottom:0 !important; }
+      .page-grid { grid-template-columns: minmax(300px,.85fr) minmax(360px,1.15fr); }
+    }
+
+    @media (max-width: 1380px) {
+      .app { grid-template-columns: 238px minmax(0,1fr); }
+      .main { padding: 20px 24px 30px; }
+      .topbar { grid-template-columns: 1fr; align-items: stretch; }
+      .controls { justify-content: flex-start; }
+      .kpis { grid-template-columns: repeat(3, minmax(0,1fr)); }
+      .grid { grid-template-columns: 260px minmax(0,1fr); gap:16px; }
+      .page-grid { grid-template-columns: 1fr; }
+      .events-list { max-height: 520px; }
+    }
+
+    @media (max-width: 980px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { position: fixed; left: 0; top:0; transform: translateX(-105%); z-index: 30; transition:.25s ease; width: min(286px, 86vw); height:100dvh; }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-close { display:grid; place-items:center; }
+      .main { padding: 16px; width:100%; max-width:100vw; overflow:hidden; }
+      .topbar { grid-template-columns: 1fr; gap: 14px; padding-bottom: 16px; }
+      .mobile-menu { display:inline-grid; }
+      .kpis { grid-template-columns: repeat(2, minmax(0,1fr)); gap:12px; margin-top:16px; }
+      .grid { grid-template-columns: 1fr; gap:16px; margin-top:16px; }
+      .grid > aside:last-child { grid-column:auto; display:grid; grid-template-columns:1fr; gap:16px; }
+      .page-grid { grid-template-columns: 1fr; gap:16px; }
+      .controls { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+      .controls .select-button { width:100%; justify-content:center; padding:0 12px; }
+      .controls .select-button:first-child { grid-column:1 / -1; }
+      .search-wrap { height:50px; }
+      .panel { padding:16px; }
+      .event-row { grid-template-columns: 84px minmax(0,1fr); gap:12px; }
+      .event-row .round-btn { display:none; }
+      .thumb { width:84px; height:68px; }
+      .event-title { font-size:15px; }
+      .meta { gap:7px; font-size:12px; }
+      .calendar-grid { min-width:0; }
+      .dow, .day { min-height:46px; padding:7px; }
+      .upcoming { padding-bottom: 10px; }
+      .event-mini { min-width: 162px; }
+      .settings-panel { width: calc(100vw - 24px); right:12px; left:12px; }
+    }
+
+    @media (max-width: 560px) {
+      h1 { font-size: 22px; }
+      .subtitle { font-size: 13px; }
+      .main { padding: 14px 12px 24px; }
+      .kpis { grid-template-columns: 1fr; }
+      .kpi { min-height: 94px; padding:16px; }
+      .kpi-value { font-size: 30px; }
+      .kpi-icon { width:48px; height:48px; }
+      .panel-title { align-items:flex-start; gap:10px; }
+      .panel-title h2 { font-size:15px; }
+      .event-row { grid-template-columns: 1fr; }
+      .thumb { width:100%; height:72px; }
+      .events-list { max-height:none; overflow:visible; }
+      .donut { margin-left:auto; margin-right:auto; }
+      .calendar-grid { font-size:12px; }
+      .dow, .day { min-height:42px; padding:6px; }
+      .marks { gap:3px; margin-top:6px; }
+      .mark { width:6px; height:6px; }
+      .controls { grid-template-columns: 1fr; }
+      .controls .select-button:first-child { grid-column:auto; }
+    }
+
+
+    /* v8 calendar, cards and responsive polish */
+    .main { padding-top: 34px; padding-bottom: 56px; }
+    .mobile-menu {
+      width:48px; height:48px; border:1px solid var(--line); border-radius:16px; background:var(--surface);
+      color:var(--text); place-items:center; box-shadow:var(--shadow); cursor:pointer;
+    }
+    .mobile-menu svg { width:22px; height:22px; stroke:currentColor; stroke-width:2.4; fill:none; stroke-linecap:round; }
+    .calendar-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
+    .calendar-controls { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .calendar-nav, .calendar-today {
+      height:40px; min-width:40px; border:1px solid var(--line); border-radius:12px; background:var(--surface-2);
+      color:var(--text); font-weight:900; cursor:pointer;
+    }
+    .calendar-today { padding:0 14px; }
+    .calendar-controls .field { width:auto; min-width:128px; height:40px; }
+    .day { cursor:pointer; transition:.18s ease; color:var(--text); border-color:var(--line); }
+    .day:hover { background: color-mix(in srgb, var(--accent) 9%, var(--surface)); color:var(--text); }
+    .day.is-today .day-num { display:inline-grid; place-items:center; min-width:28px; height:28px; border-radius:999px; background:var(--accent); color:#fff; padding:0 6px; }
+    .day.is-selected { outline:2px solid color-mix(in srgb, var(--accent) 70%, transparent); outline-offset:-2px; background: color-mix(in srgb, var(--accent) 13%, var(--surface)); }
+    .day.has-events .day-num::after { content:''; display:inline-block; width:6px; height:6px; margin-left:5px; border-radius:99px; background:var(--accent); vertical-align:middle; }
+    .event-row { border-radius:18px; padding:16px; border:1px solid var(--line); margin-bottom:12px; background:color-mix(in srgb, var(--surface) 78%, transparent); }
+    .events-list { display:block; }
+    .thumb { overflow:hidden; line-height:1.08; overflow-wrap:anywhere; hyphens:auto; font-size:14px; }
+    .event-details { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px; margin-top:12px; }
+    .event-chip { border:1px solid var(--line); border-radius:12px; padding:8px 10px; background:var(--surface-2); min-width:0; }
+    .event-chip b { display:block; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.03em; margin-bottom:3px; }
+    .event-chip span { display:block; font-size:13px; color:var(--text); overflow-wrap:anywhere; }
+    .round-btn.is-hidden, .link.is-muted { display:none !important; }
+    .events-list.table-mode .event-row { grid-template-columns:minmax(220px,1.2fr) repeat(4,minmax(120px,.7fr)); align-items:start; }
+    .events-list.table-mode .thumb, .events-list.table-mode .round-btn, .events-list.table-mode .event-details { display:none; }
+    .events-list.table-mode .event-row > div:nth-child(2) { display:contents; }
+    .events-list.table-mode .event-title, .events-list.table-mode .meta { display:block; margin:0; }
+
+    @media (max-width: 980px) {
+      .main { padding:22px 16px 44px; }
+      .mobile-menu { display:grid; }
+      .kpis { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .events-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; max-height:none; overflow:visible; }
+      .event-row { grid-template-columns:1fr; align-content:start; gap:12px; margin:0; padding:14px; min-height:210px; }
+      .thumb { width:100%; height:68px; }
+      .event-details { grid-template-columns:1fr; gap:7px; }
+      .event-chip { padding:7px 9px; }
+      .event-chip span { font-size:12px; }
+      .round-btn { display:none; }
+    }
+    @media (max-width: 560px) {
+      .main { padding:20px 12px 48px; }
+      .topbar { gap:16px; padding-bottom:18px; }
+      .panel { padding:18px; }
+      .events-list { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+      .event-row { min-height:230px; border-radius:20px; }
+      .event-title { font-size:14px; }
+      .meta { font-size:12px; gap:6px; }
+      .calendar-head { align-items:flex-start; }
+      .calendar-controls { width:100%; display:grid; grid-template-columns:40px 1fr 1fr 40px; }
+      .calendar-today { grid-column:1 / -1; }
+      .calendar-controls .field { min-width:0; width:100%; }
+    }
+
+
+    /* v9 calendar modes, activity rings and compact mobile polish */
+    .title-row { display:flex; align-items:flex-start; gap:14px; min-width:0; }
+    .title-row > div { min-width:0; }
+    .mobile-menu { flex:0 0 auto; margin-top:-6px; }
+    .kpi-value, .date-num, .finance-number { letter-spacing: 0; font-variant-numeric: tabular-nums; }
+    .upcoming { align-items:stretch; }
+    .event-mini { display:grid; grid-template-rows:auto 1fr auto auto; min-height:150px; height:auto; }
+    .date-badge { min-height:38px; align-items:baseline; }
+    .date-num { min-width:42px; line-height:.95; }
+    .mini-title { min-height:38px; }
+    .calendar-head h2 { margin:0; }
+    .calendar-modes { display:inline-flex; align-items:center; gap:4px; padding:4px; margin-top:10px; border:1px solid var(--line); border-radius:999px; background:var(--surface-2); }
+    .calendar-mode { border:0; height:32px; padding:0 13px; border-radius:999px; color:var(--muted); background:transparent; font-weight:900; cursor:pointer; }
+    .calendar-mode.active { color:var(--text); background:var(--surface); box-shadow:0 8px 18px rgba(0,0,0,.08); }
+    .calendar-grid.is-day, .calendar-grid.is-week, .calendar-grid.is-year { display:block; border:0; border-radius:0; overflow:visible; }
+    .day-view-card { border:1px solid var(--line); border-radius:18px; background:var(--surface-2); padding:18px; }
+    .day-view-title { font-size:30px; font-weight:950; line-height:1.05; margin-bottom:4px; }
+    .day-view-sub { color:var(--muted); font-weight:800; margin-bottom:18px; }
+    .day-agenda { display:grid; gap:10px; }
+    .agenda-item { display:grid; grid-template-columns:7px 1fr auto; gap:12px; align-items:start; padding:12px; border:1px solid var(--line); border-radius:14px; background:var(--surface); }
+    .agenda-color { width:7px; height:100%; min-height:42px; border-radius:999px; background:var(--accent); }
+    .agenda-title { font-weight:950; line-height:1.2; }
+    .agenda-meta { color:var(--muted); font-size:13px; margin-top:5px; }
+    .week-view { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:8px; }
+    .week-day { min-height:164px; border:1px solid var(--line); border-radius:16px; background:var(--surface-2); padding:10px; }
+    .week-day.is-today { outline:2px solid color-mix(in srgb, var(--accent) 66%, transparent); }
+    .week-date { display:flex; justify-content:space-between; align-items:center; font-weight:950; margin-bottom:10px; }
+    .week-date span { color:var(--muted); font-size:12px; text-transform:uppercase; }
+    .week-event { display:grid; grid-template-columns:5px 1fr; gap:6px; align-items:start; margin-top:7px; font-size:12px; line-height:1.22; color:var(--text); }
+    .week-event i { display:block; width:5px; height:100%; min-height:22px; border-radius:99px; background:var(--accent); }
+    .year-view { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:18px; }
+    .mini-month { border:1px solid var(--line); border-radius:16px; background:var(--surface-2); padding:12px; }
+    .mini-month-title { color:var(--accent); font-size:18px; font-weight:950; margin-bottom:10px; }
+    .mini-month-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; text-align:center; font-size:11px; }
+    .mini-month-grid .dow-mini { color:var(--muted); font-weight:900; }
+    .mini-day { position:relative; min-height:20px; display:grid; place-items:center; border-radius:999px; font-weight:850; color:var(--text); }
+    .mini-day.muted { color:color-mix(in srgb, var(--muted) 55%, transparent); }
+    .mini-day.today { background:var(--accent); color:#fff; }
+    .mini-day.has::after { content:''; position:absolute; width:4px; height:4px; border-radius:99px; background:var(--accent-2); left:50%; bottom:1px; transform:translateX(-50%); }
+    .activity-card { margin-top:18px; }
+    .activity-layout { display:grid; grid-template-columns:220px 1fr; gap:22px; align-items:center; }
+    .rings-wrap { position:relative; width:210px; height:210px; margin:auto; }
+    .rings-svg { width:100%; height:100%; transform:rotate(-90deg); filter:drop-shadow(0 12px 24px rgba(0,0,0,.16)); }
+    .ring-track { fill:none; stroke:rgba(255,255,255,.13); stroke-width:18; }
+    [data-theme="light"] .ring-track { stroke:rgba(18,18,23,.10); }
+    .ring-value { fill:none; stroke-width:18; stroke-linecap:round; transition:stroke-dasharray .35s ease; }
+    .rings-center { position:absolute; inset:62px; border-radius:999px; display:grid; place-items:center; text-align:center; background:var(--surface); border:1px solid var(--line); font-weight:950; line-height:1.1; }
+    .rings-center small { display:block; color:var(--muted); font-size:11px; margin-top:4px; }
+    .rings-stats { display:grid; gap:12px; }
+    .ring-stat { display:grid; grid-template-columns:12px 1fr auto; gap:10px; align-items:center; padding:12px; border:1px solid var(--line); border-radius:15px; background:var(--surface-2); }
+    .ring-dot { width:12px; height:12px; border-radius:99px; }
+    .ring-name { font-weight:950; }
+    .ring-caption { color:var(--muted); font-size:12px; margin-top:3px; }
+    .ring-count { font-weight:950; font-variant-numeric:tabular-nums; }
+    .event-row { grid-template-columns:92px 1fr 42px; align-items:start; }
+    .event-details { display:none; grid-column:2 / 4; }
+    .event-row.expanded .event-details { display:grid; }
+    .event-expand { display:grid; place-items:center; transition:.18s ease; }
+    .event-row.expanded .event-expand { transform:rotate(90deg); }
+    .event-actions { display:flex; justify-content:flex-end; }
+
+    @media (max-width: 980px) {
+      .main { padding-top:28px; }
+      .topbar { align-items:start; }
+      .mobile-menu { width:44px; height:44px; border-radius:14px; margin-top:-10px; }
+      .title-row { gap:12px; padding-top:8px; }
+      .grid { display:flex; flex-direction:column; }
+      .grid > aside:first-child { order:2; }
+      .grid > section { order:1; }
+      .grid > aside:last-child { order:3; }
+      .activity-layout { grid-template-columns:1fr; gap:14px; }
+      .rings-wrap { width:190px; height:190px; }
+      .rings-center { inset:56px; }
+      .week-view { grid-template-columns:1fr; }
+      .week-day { min-height:auto; }
+      .year-view { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+      .events-list { display:block; }
+      .event-row { grid-template-columns:78px minmax(0,1fr) 38px; min-height:0; margin-bottom:10px; padding:12px; border-radius:18px; }
+      .event-details { grid-column:1 / 4; }
+      .thumb { width:78px; height:62px; font-size:13px; }
+      .round-btn { display:grid; }
+    }
+    @media (max-width: 560px) {
+      .main { padding:26px 12px 44px; }
+      .title-row { align-items:flex-start; }
+      h1 { font-size:20px; letter-spacing:0; }
+      .subtitle { margin-top:3px; }
+      .search-wrap { height:46px; border-radius:15px; }
+      .controls { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .controls .select-button:first-child { grid-column:1 / -1; }
+      .kpis { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+      .kpi { min-height:92px; padding:14px; border-radius:18px; }
+      .kpi-title { font-size:12px; line-height:1.2; }
+      .kpi-value { font-size:29px; }
+      .kpi-sub { font-size:11px; }
+      .kpi-icon { width:42px; height:42px; border-radius:14px; }
+      .panel { padding:14px; border-radius:20px; }
+      .filters { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+      .filters > div:nth-last-child(2), .filters .btn { grid-column:1 / -1; }
+      label { font-size:12px; margin-bottom:6px; }
+      select, .field { height:40px; font-size:13px; }
+      .calendar-head { display:grid; gap:10px; }
+      .calendar-modes { width:100%; display:grid; grid-template-columns:repeat(3,1fr); border-radius:16px; }
+      .calendar-mode { padding:0 5px; font-size:12px; }
+      .calendar-controls { grid-template-columns:38px minmax(0,1fr) 38px; gap:6px; }
+      .calendar-nav, .calendar-today { height:38px; border-radius:12px; }
+      .calendar-today { grid-column:1 / -1; }
+      .dow, .day { min-height:40px; padding:5px; }
+      .day-view-title { font-size:24px; }
+      .agenda-item { grid-template-columns:6px 1fr; }
+      .agenda-item > div:last-child { grid-column:2; }
+      .year-view { grid-template-columns:1fr; }
+      .event-mini { min-width:148px; min-height:142px; padding:12px; }
+      .date-num { font-size:25px; min-width:36px; }
+      .mini-title { font-size:13px; min-height:34px; }
+      .event-row { grid-template-columns:64px minmax(0,1fr) 34px; padding:10px; gap:10px; }
+      .thumb { width:64px; height:58px; font-size:11px; border-radius:14px; }
+      .event-title { font-size:13px; }
+      .meta { font-size:11px; margin-top:6px; }
+      .event-chip b { font-size:10px; }
+      .event-chip span { font-size:11px; }
+      .rings-wrap { width:172px; height:172px; }
+      .rings-center { inset:50px; font-size:13px; }
+      .ring-track, .ring-value { stroke-width:16; }
+    }
+
+
+    /* v10 calendar width guard */
+    .calendar-grid { width:100%; max-width:100%; }
+    .calendar-grid > * { min-width:0; }
+    .day, .dow { min-width:0; overflow:hidden; }
+    .day { width:100%; appearance:none; text-align:left; }
+    .day-num { display:inline-block; max-width:100%; }
+    @media (max-width: 1200px) {
+      .page-grid { grid-template-columns:1fr; }
+      .calendar-grid { font-size:12px; }
+      .dow, .day { min-height:42px; padding:6px; }
+    }
+    @media (max-width: 560px) {
+      .calendar-grid { border-radius:14px; }
+      .dow, .day { min-height:36px; padding:4px; }
+      .day-num { font-size:12px; }
+      .marks { margin-top:4px; gap:2px; }
+      .mark { width:5px; height:5px; }
+    }
+
+    /* v11 mobile month calendar hard fit */
+    @media (max-width: 560px) {
+      #calendar.calendar-grid:not(.is-day):not(.is-week):not(.is-year) {
+        display:grid !important;
+        grid-template-columns:repeat(7, calc((100vw - 56px) / 7)) !important;
+        justify-content:start !important;
+        width:calc(100vw - 56px) !important;
+        max-width:calc(100vw - 56px) !important;
+      }
+      #calendar.calendar-grid:not(.is-day):not(.is-week):not(.is-year) .dow,
+      #calendar.calendar-grid:not(.is-day):not(.is-week):not(.is-year) .day {
+        width:auto !important;
+        min-width:0 !important;
+        max-width:none !important;
+        padding:4px !important;
+        min-height:34px !important;
+      }
+      #calendar.calendar-grid:not(.is-day):not(.is-week):not(.is-year) .day-num { font-size:11px; }
+    }
+
+    /* v12 year view mobile button reset */
+    .mini-day, .mini-month-grid button {
+      appearance:none !important;
+      border:0 !important;
+      background:transparent !important;
+      color:var(--text);
+      font:inherit;
+      padding:0 !important;
+      min-width:0 !important;
+      width:auto !important;
+      height:auto !important;
+    }
+    .mini-day.today { background:var(--accent) !important; color:#fff !important; }
+    @media (max-width: 560px) {
+      .mini-month-grid {
+        grid-template-columns:repeat(7, minmax(0, 1fr)) !important;
+        gap:3px !important;
+      }
+      .mini-month { overflow:hidden; }
+      .mini-day { min-height:18px !important; font-size:10px !important; }
+      .dow-mini { min-width:0 !important; font-size:10px !important; }
+    }
+
+    /* v13 hard-fit year mini calendars on mobile */
+    @media (max-width: 560px) {
+      .year-view,
+      .mini-month {
+        width:calc(100vw - 56px) !important;
+        max-width:calc(100vw - 56px) !important;
+        min-width:0 !important;
+      }
+      .mini-month-grid {
+        width:calc(100vw - 80px) !important;
+        max-width:calc(100vw - 80px) !important;
+        grid-template-columns:repeat(7, calc((100vw - 80px) / 7)) !important;
+        justify-content:start !important;
+      }
+      .mini-month-grid > * {
+        min-width:0 !important;
+        width:auto !important;
+        max-width:none !important;
+      }
+    }
+    /* v16 calendar simplification and adaptive all-month view */
+    .calendar-head {
+      align-items:flex-start;
+    }
+    .calendar-modes {
+      grid-template-columns:repeat(3, minmax(0,1fr));
+    }
+    .calendar-controls {
+      display:grid;
+      grid-template-columns:40px minmax(150px, 1fr) 40px auto;
+      align-items:center;
+      gap:8px;
+      min-width:min(100%, 420px);
+    }
+    .calendar-controls .field {
+      width:100%;
+      min-width:0;
+    }
+    .calendar-grid.is-all-months {
+      display:block;
+      border:0;
+      border-radius:0;
+      overflow:visible;
+      width:100%;
+    }
+    .all-months-view {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(190px, 1fr));
+      gap:16px;
+      width:100%;
+      min-width:0;
+    }
+    .all-months-view .mini-month {
+      width:auto !important;
+      max-width:100% !important;
+      min-width:0 !important;
+      overflow:hidden;
+    }
+    .all-months-view .mini-month-grid {
+      width:100% !important;
+      max-width:100% !important;
+      grid-template-columns:repeat(7, minmax(0,1fr)) !important;
+    }
+    .all-months-view .mini-month-grid > * {
+      min-width:0 !important;
+    }
+    @media (max-width: 1380px) {
+      .calendar-head {
+        display:grid;
+        grid-template-columns:1fr;
+      }
+      .calendar-controls {
+        width:100%;
+      }
+    }
+    @media (max-width: 560px) {
+      .calendar-modes {
+        grid-template-columns:repeat(3, minmax(0,1fr)) !important;
+      }
+      .calendar-controls {
+        grid-template-columns:38px minmax(0,1fr) 38px !important;
+      }
+      .calendar-today {
+        grid-column:1 / -1;
+      }
+      .all-months-view {
+        grid-template-columns:1fr;
+      }
+    }
+
+    /* v14 desktop quality pass: alignment, calendar modes, event cards */
+    @media (min-width: 981px) {
+      .main { padding-top:36px; }
+      .topbar { align-items:start; }
+      .title-row {
+        display:grid !important;
+        grid-template-columns:64px minmax(0,1fr);
+        align-items:center !important;
+        gap:22px !important;
+      }
+      .mobile-menu {
+        display:grid !important;
+        width:64px !important;
+        height:64px !important;
+        margin:0 !important;
+        border-radius:20px !important;
+        align-self:center !important;
+      }
+      .title-row h1 { line-height:1; padding-top:2px; }
+      .subtitle { margin-top:14px; }
+      .sidebar {
+        padding-bottom:34px;
+        border-radius:0 26px 26px 0;
+        background:
+          radial-gradient(circle at 24% 92%, rgba(184,11,92,.72), transparent 31%),
+          radial-gradient(circle at 90% 2%, rgba(255,122,69,.30), transparent 30%),
+          linear-gradient(180deg, #0B0C0F 0%, #07080B 64%, #120711 100%);
+      }
+      .sidebar-card {
+        margin-bottom:8px;
+        background:linear-gradient(135deg, rgba(255,255,255,.16), rgba(184,11,92,.18));
+      }
+      .page-grid.calendar-wide {
+        grid-template-columns:1fr !important;
+      }
+      .page-grid.calendar-wide #eventsSection {
+        display:none;
+      }
+      .page-grid.calendar-wide #calendarSection {
+        min-width:0;
+      }
+      .activity-layout {
+        grid-template-columns:300px 1fr !important;
+        gap:34px !important;
+      }
+      .rings-wrap {
+        width:250px !important;
+        height:250px !important;
+      }
+      .rings-svg { overflow:visible; }
+      .rings-center {
+        inset:78px !important;
+        z-index:2;
+        background:#171820 !important;
+        border:1px solid rgba(255,255,255,.10) !important;
+        box-shadow:0 0 0 10px rgba(12,13,16,.78), inset 0 1px 0 rgba(255,255,255,.08);
+        font-size:19px;
+      }
+      .rings-center small {
+        font-size:11px;
+        line-height:1;
+        margin-top:6px;
+      }
+      .event-row {
+        grid-template-columns:160px minmax(0,1fr) 48px !important;
+        gap:18px !important;
+        min-height:126px;
+        padding:20px 22px !important;
+        overflow:hidden;
+      }
+      .events-list {
+        max-height:720px;
+        padding:0 12px 42px 0;
+        scrollbar-gutter:stable;
+      }
+      .thumb {
+        width:160px !important;
+        height:96px !important;
+        border-radius:18px !important;
+        align-self:start;
+        font-size:20px !important;
+        line-height:1.05;
+        overflow:hidden;
+      }
+      .event-title {
+        font-size:18px;
+        line-height:1.22;
+        max-width:100%;
+        overflow-wrap:break-word;
+      }
+      .event-actions {
+        align-self:start;
+        padding-top:8px;
+      }
+      .event-details {
+        grid-column:2 / 4 !important;
+      }
+      .week-view {
+        grid-template-columns:repeat(7, minmax(0,1fr)) !important;
+        gap:12px !important;
+        width:100%;
+      }
+      .week-day {
+        min-height:420px !important;
+        padding:14px !important;
+        border-radius:20px !important;
+        overflow:hidden;
+        text-align:left;
+      }
+      .week-date {
+        position:sticky;
+        top:0;
+        z-index:1;
+        margin:-14px -14px 12px;
+        padding:12px 14px;
+        background:linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 94%, #000), color-mix(in srgb, var(--surface-2) 78%, transparent));
+        border-bottom:1px solid var(--line);
+      }
+      .week-date b {
+        font-size:22px;
+        color:var(--text);
+      }
+      .week-event {
+        grid-template-columns:5px minmax(0,1fr) !important;
+        gap:8px !important;
+        padding:8px 0;
+        margin:0 !important;
+        font-size:13px !important;
+        line-height:1.2 !important;
+      }
+      .week-event span {
+        display:-webkit-box;
+        -webkit-line-clamp:3;
+        -webkit-box-orient:vertical;
+        overflow:hidden;
+        overflow-wrap:break-word;
+      }
+      .week-more {
+        margin-top:10px;
+        padding:8px 10px;
+        border-radius:999px;
+        background:color-mix(in srgb, var(--accent) 14%, transparent);
+        color:var(--accent);
+        font-weight:900;
+        font-size:12px;
+      }
+      .year-view {
+        grid-template-columns:repeat(4, minmax(220px,1fr)) !important;
+        gap:24px !important;
+        width:100%;
+      }
+      .mini-month {
+        width:auto !important;
+        max-width:none !important;
+        min-width:0 !important;
+        padding:18px !important;
+        border-radius:22px !important;
+        overflow:hidden;
+      }
+      .mini-month-title {
+        font-size:24px !important;
+        margin-bottom:16px !important;
+      }
+      .mini-month-grid {
+        width:100% !important;
+        max-width:100% !important;
+        grid-template-columns:repeat(7, minmax(0,1fr)) !important;
+        gap:8px !important;
+        font-size:14px !important;
+      }
+      .mini-day {
+        min-height:28px !important;
+        border-radius:999px;
+      }
+      .mini-day.has::after {
+        width:5px;
+        height:5px;
+      }
+    }
+
+    /* v16 final calendar guardrails */
+    .calendar-head {
+      align-items:flex-start !important;
+    }
+    .calendar-modes {
+      display:grid !important;
+      grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+      min-width:min(100%, 306px);
+      width:max-content;
+      max-width:100%;
+    }
+    .calendar-mode {
+      min-width:0;
+      white-space:nowrap;
+    }
+    .calendar-controls {
+      display:grid !important;
+      grid-template-columns:40px minmax(160px, 1fr) 40px auto !important;
+      align-items:center;
+      gap:8px;
+      min-width:min(100%, 430px);
+      max-width:100%;
+    }
+    .calendar-controls .field {
+      min-width:0 !important;
+      width:100% !important;
+    }
+    .calendar-grid.is-all-months {
+      display:block !important;
+      border:0 !important;
+      border-radius:0 !important;
+      overflow:visible !important;
+      width:100%;
+      min-width:0;
+    }
+    .all-months-view {
+      display:grid !important;
+      grid-template-columns:repeat(auto-fit, minmax(184px, 1fr)) !important;
+      gap:16px;
+      width:100%;
+      min-width:0;
+    }
+    .all-months-view .mini-month {
+      width:auto !important;
+      min-width:0 !important;
+      max-width:100% !important;
+      overflow:hidden;
+    }
+    .all-months-view .mini-month-title {
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .all-months-view .mini-month-grid {
+      grid-template-columns:repeat(7, minmax(0, 1fr)) !important;
+      gap:4px !important;
+      width:100%;
+      min-width:0;
+    }
+    .all-months-view .mini-month-grid > * {
+      min-width:0 !important;
+    }
+    .all-months-view .mini-day {
+      min-width:0;
+      min-height:22px !important;
+      font-size:clamp(10px, .82vw, 12px);
+    }
+    @media (min-width: 981px) {
+      .page-grid.calendar-wide {
+        grid-template-columns:1fr !important;
+      }
+      .page-grid.calendar-wide #calendarSection {
+        min-width:0;
+      }
+      .page-grid.calendar-wide #eventsSection {
+        display:none;
+      }
+    }
+    @media (max-width: 1380px) {
+      .calendar-head {
+        display:grid !important;
+        grid-template-columns:1fr;
+      }
+      .calendar-controls {
+        width:100%;
+      }
+    }
+    @media (max-width: 560px) {
+      .calendar-modes {
+        width:100%;
+      }
+      .calendar-controls {
+        grid-template-columns:38px minmax(0,1fr) 38px !important;
+      }
+      .calendar-today {
+        grid-column:1 / -1;
+      }
+      .all-months-view {
+        grid-template-columns:1fr !important;
+      }
+    }
+
+    /* v17 calendar and month events scale fix */
+    .calendar-controls {
+      grid-template-columns:40px minmax(108px, 1fr) 40px minmax(86px, auto) !important;
+      gap:6px !important;
+      min-width:0 !important;
+      width:100%;
+    }
+    .calendar-today {
+      display:inline-grid !important;
+      place-items:center;
+      min-width:86px;
+      padding:0 10px !important;
+      line-height:1 !important;
+      white-space:nowrap;
+      box-sizing:border-box;
+    }
+    @media (min-width: 981px) {
+      #eventsSection .events-list {
+        max-height:620px;
+        padding-right:8px;
+      }
+      #eventsSection .event-row {
+        grid-template-columns:128px minmax(0,1fr) 40px !important;
+        gap:14px !important;
+        min-height:108px !important;
+        padding:14px 16px !important;
+        border-radius:18px !important;
+      }
+      #eventsSection .thumb {
+        width:128px !important;
+        height:76px !important;
+        border-radius:16px !important;
+        font-size:17px !important;
+        line-height:1.05;
+      }
+      #eventsSection .event-title {
+        display:-webkit-box;
+        -webkit-line-clamp:3;
+        -webkit-box-orient:vertical;
+        overflow:hidden;
+        font-size:15px !important;
+        line-height:1.16 !important;
+        overflow-wrap:break-word;
+      }
+      #eventsSection .meta {
+        margin-top:8px;
+        gap:7px;
+        font-size:11px !important;
+        line-height:1.22;
+      }
+      #eventsSection .event-actions {
+        padding-top:4px !important;
+      }
+      #eventsSection .event-expand {
+        width:38px;
+        height:38px;
+      }
+    }
+    @media (max-width: 1180px) {
+      .calendar-controls {
+        grid-template-columns:40px minmax(0,1fr) 40px !important;
+      }
+      .calendar-today {
+        grid-column:1 / -1;
+        justify-self:end;
+      }
+    }
+    @media (max-width: 560px) {
+      .calendar-today {
+        justify-self:stretch;
+      }
+    }
+
+    /* v18 activity rings polish */
+    .rings-center {
+      inset:86px !important;
+      font-size:17px !important;
+      line-height:.9 !important;
+      gap:0 !important;
+      align-content:center;
+      background:transparent !important;
+      border:0 !important;
+      box-shadow:none !important;
+      pointer-events:none;
+    }
+    .rings-center small {
+      font-size:10px !important;
+      line-height:.9 !important;
+      margin-top:0 !important;
+    }
+    .activity-ring-municipal {
+      filter:drop-shadow(0 0 10px rgba(255,122,69,.34));
+    }
+    @media (max-width: 980px) {
+      .rings-center {
+        inset:66px !important;
+        font-size:15px !important;
+      }
+    }
+    @media (max-width: 560px) {
+      .rings-center {
+        inset:58px !important;
+        font-size:14px !important;
+      }
+    }
+
+    /* v20 week calendar alignment */
+    .calendar-grid.is-week {
+      display:block !important;
+      border:0 !important;
+      border-radius:0 !important;
+      overflow:visible !important;
+    }
+    .week-view {
+      align-items:stretch !important;
+      grid-auto-rows:1fr;
+    }
+    .week-day {
+      display:flex !important;
+      flex-direction:column;
+      align-items:stretch !important;
+      justify-content:flex-start !important;
+      gap:0;
+      box-sizing:border-box;
+    }
+    .week-date {
+      position:relative !important;
+      top:auto !important;
+      flex:0 0 58px;
+      height:58px !important;
+      min-height:58px !important;
+      display:grid !important;
+      grid-template-columns:1fr auto;
+      align-items:center !important;
+      margin:-14px -14px 12px !important;
+      padding:0 14px !important;
+      box-sizing:border-box;
+    }
+    .week-date b,
+    .week-date span {
+      line-height:1 !important;
+    }
+    .week-date span {
+      align-self:center !important;
+      justify-self:end;
+    }
+    .week-event,
+    .week-more,
+    .week-day .agenda-meta {
+      flex:0 0 auto;
+    }
+
+    /* v26 mobile app layout, Apple Watch inspired */
+    @media (max-width: 640px) {
+      :root {
+        --radius: 20px;
+      }
+      html {
+        background:#000;
+      }
+      body {
+        background:
+          radial-gradient(circle at 50% -8%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 30%),
+          radial-gradient(circle at 14% 20%, rgba(255,122,69,.16), transparent 22%),
+          #050506 !important;
+      }
+      body,
+      [data-theme="light"] body {
+        color:#fff;
+      }
+      .app {
+        display:block !important;
+        min-height:100dvh;
+        overflow-x:hidden;
+      }
+      .main {
+        width:100%;
+        max-width:100vw;
+        padding:calc(18px + env(safe-area-inset-top)) 14px calc(34px + env(safe-area-inset-bottom)) !important;
+        overflow:visible !important;
+      }
+      .card,
+      .search-wrap,
+      .select-button,
+      .field,
+      select,
+      .event-mini,
+      .calendar-nav,
+      .calendar-today,
+      .calendar-modes {
+        background:rgba(29,29,32,.86) !important;
+        border-color:rgba(255,255,255,.12) !important;
+        box-shadow:none !important;
+        backdrop-filter:blur(22px);
+      }
+      .card {
+        border-radius:22px !important;
+      }
+      .topbar {
+        display:grid !important;
+        grid-template-columns:1fr;
+        gap:12px !important;
+        border-bottom:0 !important;
+        padding:0 0 14px !important;
+      }
+      .title-row {
+        display:grid !important;
+        grid-template-columns:44px minmax(0,1fr);
+        gap:12px;
+        align-items:center !important;
+      }
+      .mobile-menu {
+        display:grid !important;
+        width:44px !important;
+        height:44px !important;
+        border-radius:15px !important;
+        background:rgba(29,29,32,.92) !important;
+        color:#fff !important;
+      }
+      h1 {
+        font-size:24px !important;
+        line-height:1.02 !important;
+        letter-spacing:-.03em !important;
+      }
+      .subtitle {
+        font-size:15px !important;
+        margin-top:4px !important;
+        color:rgba(255,255,255,.62) !important;
+      }
+      .search-wrap {
+        height:46px !important;
+        border-radius:15px !important;
+        padding:0 14px !important;
+        color:rgba(255,255,255,.64);
+      }
+      .search-wrap input {
+        color:#fff !important;
+        font-size:13px !important;
+        min-width:0;
+      }
+      .search-wrap input::placeholder {
+        color:rgba(255,255,255,.46);
+      }
+      .controls {
+        display:grid !important;
+        grid-template-columns:1fr 1fr;
+        gap:10px !important;
+      }
+      .controls .select-button {
+        height:44px !important;
+        border-radius:15px !important;
+        justify-content:center !important;
+        font-size:13px !important;
+        font-weight:850;
+        padding:0 10px !important;
+      }
+      .controls .select-button:first-child {
+        grid-column:1 / -1 !important;
+      }
+      .kpis {
+        display:grid !important;
+        grid-template-columns:repeat(2, minmax(0,1fr)) !important;
+        gap:12px !important;
+        margin-top:6px !important;
+      }
+      .kpi {
+        min-height:132px !important;
+        padding:16px !important;
+        border-radius:22px !important;
+        display:grid !important;
+        grid-template-columns:1fr;
+        align-items:start !important;
+        position:relative;
+        overflow:hidden;
+      }
+      .kpi-title {
+        font-size:13px !important;
+        line-height:1.18 !important;
+        color:#fff !important;
+        padding-right:48px;
+      }
+      .kpi-value {
+        font-size:34px !important;
+        line-height:.95 !important;
+        margin-top:12px !important;
+        color:#fff !important;
+      }
+      .kpi-sub {
+        font-size:11px !important;
+        color:rgba(255,255,255,.56) !important;
+        margin-top:7px !important;
+      }
+      .kpi-icon {
+        position:absolute;
+        right:14px;
+        top:14px;
+        width:42px !important;
+        height:42px !important;
+        border-radius:14px !important;
+      }
+      .activity-card {
+        margin-top:14px !important;
+        padding:18px !important;
+        border-radius:24px !important;
+      }
+      .activity-card .panel-title {
+        margin-bottom:12px !important;
+      }
+      .panel-title h2 {
+        font-size:18px !important;
+        line-height:1.05;
+        color:#fff !important;
+        text-transform:none !important;
+        letter-spacing:0 !important;
+      }
+      .activity-layout {
+        display:grid !important;
+        grid-template-columns:1fr !important;
+        gap:14px !important;
+      }
+      .rings-wrap {
+        width:min(72vw, 252px) !important;
+        height:min(72vw, 252px) !important;
+        margin:0 auto !important;
+      }
+      .rings-center {
+        inset:calc(50% - 28px) !important;
+        width:56px !important;
+        height:56px !important;
+        margin:auto !important;
+        font-size:16px !important;
+        line-height:.92 !important;
+      }
+      .rings-center small {
+        font-size:9px !important;
+        line-height:.95 !important;
+      }
+      .rings-stats {
+        display:grid !important;
+        grid-template-columns:1fr !important;
+        gap:8px !important;
+      }
+      .ring-stat {
+        min-height:56px;
+        border-radius:16px !important;
+        background:rgba(255,255,255,.04) !important;
+        padding:10px 12px !important;
+      }
+      .ring-name {
+        font-size:14px !important;
+      }
+      .ring-caption {
+        font-size:11px !important;
+        color:rgba(255,255,255,.56) !important;
+      }
+      .grid {
+        display:grid !important;
+        grid-template-columns:1fr !important;
+        gap:14px !important;
+        margin-top:14px !important;
+      }
+      .grid > aside:first-child {
+        order:3;
+      }
+      .grid > section {
+        order:1;
+      }
+      .grid > aside:last-child {
+        order:2;
+        display:grid !important;
+        grid-template-columns:1fr !important;
+        gap:14px !important;
+      }
+      .panel {
+        padding:16px !important;
+        border-radius:22px !important;
+      }
+      .panel-title {
+        align-items:center !important;
+        margin-bottom:14px !important;
+      }
+      .link {
+        font-size:12px !important;
+      }
+      #upcomingSection {
+        margin-bottom:14px !important;
+      }
+      .upcoming {
+        display:grid !important;
+        grid-template-columns:repeat(2, minmax(0,1fr)) !important;
+        gap:10px !important;
+        overflow:visible !important;
+        padding:0 !important;
+      }
+      .event-mini {
+        min-width:0 !important;
+        min-height:146px !important;
+        border-radius:20px !important;
+        padding:14px !important;
+      }
+      .date-badge {
+        gap:7px !important;
+      }
+      .date-num {
+        font-size:32px !important;
+        line-height:.92 !important;
+        color:#fff !important;
+      }
+      .date-month,
+      .mini-place,
+      .status,
+      .meta,
+      label,
+      .checkrow,
+      .legend-row {
+        color:rgba(255,255,255,.60) !important;
+      }
+      .mini-title {
+        font-size:13px !important;
+        line-height:1.15 !important;
+        min-height:auto !important;
+        color:#fff !important;
+        display:-webkit-box;
+        -webkit-line-clamp:3;
+        -webkit-box-orient:vertical;
+        overflow:hidden;
+      }
+      .status {
+        font-size:10px !important;
+        padding:4px 8px !important;
+        margin-top:9px !important;
+        background:rgba(184,11,92,.16) !important;
+      }
+      .page-grid,
+      .page-grid.calendar-wide {
+        display:grid !important;
+        grid-template-columns:1fr !important;
+        gap:14px !important;
+      }
+      .calendar-head {
+        display:grid !important;
+        grid-template-columns:1fr !important;
+        gap:12px !important;
+      }
+      .calendar-modes {
+        width:100% !important;
+        display:grid !important;
+        grid-template-columns:repeat(3,1fr) !important;
+        border-radius:999px !important;
+        padding:4px !important;
+      }
+      .calendar-mode {
+        height:32px !important;
+        border-radius:999px !important;
+        font-size:12px !important;
+        color:rgba(255,255,255,.62) !important;
+      }
+      .calendar-mode.active {
+        color:#fff !important;
+        background:rgba(255,255,255,.12) !important;
+      }
+      .calendar-controls {
+        display:grid !important;
+        grid-template-columns:38px minmax(0,1fr) 38px !important;
+        gap:8px !important;
+      }
+      .calendar-controls .field {
+        min-width:0 !important;
+        width:100% !important;
+        height:38px !important;
+        font-size:13px !important;
+      }
+      .calendar-nav,
+      .calendar-today {
+        height:38px !important;
+        border-radius:13px !important;
+      }
+      .calendar-today {
+        grid-column:1 / -1 !important;
+        justify-self:stretch !important;
+        min-width:0 !important;
+      }
+      #calendar.calendar-grid:not(.is-day):not(.is-week):not(.is-all-months) {
+        display:grid !important;
+        grid-template-columns:repeat(7, minmax(0,1fr)) !important;
+        border-radius:18px !important;
+        overflow:hidden !important;
+      }
+      .dow {
+        min-height:28px !important;
+        padding:7px 2px !important;
+        font-size:10px !important;
+      }
+      .day {
+        min-height:48px !important;
+        padding:6px 4px !important;
+      }
+      .day-num {
+        font-size:12px !important;
+      }
+      .marks {
+        gap:3px !important;
+        margin-top:6px !important;
+      }
+      .mark {
+        width:6px !important;
+        height:6px !important;
+      }
+      .calendar-grid.is-week {
+        overflow:visible !important;
+      }
+      .week-view {
+        display:grid !important;
+        grid-template-columns:1fr !important;
+        gap:10px !important;
+      }
+      .week-day {
+        min-height:0 !important;
+        border-radius:18px !important;
+        padding:12px !important;
+      }
+      .week-date {
+        height:42px !important;
+        min-height:42px !important;
+        flex-basis:42px !important;
+        margin:-12px -12px 10px !important;
+        padding:0 12px !important;
+      }
+      .week-date b {
+        font-size:22px !important;
+      }
+      .week-event {
+        font-size:12px !important;
+        padding:6px 0 !important;
+      }
+      .day-view-title {
+        font-size:25px !important;
+      }
+      .agenda-item {
+        grid-template-columns:6px 1fr !important;
+      }
+      .agenda-item > .agenda-meta {
+        grid-column:2;
+      }
+      #eventsSection .events-list,
+      .events-list {
+        display:grid !important;
+        grid-template-columns:1fr !important;
+        gap:10px !important;
+        max-height:none !important;
+        overflow:visible !important;
+      }
+      #eventsSection .event-row,
+      .event-row {
+        min-height:0 !important;
+        display:grid !important;
+        grid-template-columns:82px minmax(0,1fr) 34px !important;
+        gap:12px !important;
+        padding:12px !important;
+        margin:0 !important;
+        border-radius:20px !important;
+        align-items:start !important;
+        background:rgba(29,29,32,.86) !important;
+      }
+      #eventsSection .thumb,
+      .thumb {
+        width:82px !important;
+        height:72px !important;
+        border-radius:17px !important;
+        font-size:13px !important;
+      }
+      #eventsSection .event-title,
+      .event-title {
+        font-size:14px !important;
+        line-height:1.16 !important;
+        display:-webkit-box !important;
+        -webkit-line-clamp:3 !important;
+        -webkit-box-orient:vertical !important;
+        overflow:hidden !important;
+      }
+      #eventsSection .meta,
+      .meta {
+        gap:6px !important;
+        margin-top:7px !important;
+        font-size:11px !important;
+        line-height:1.2 !important;
+      }
+      .event-actions {
+        display:block !important;
+      }
+      .round-btn,
+      .event-expand {
+        display:grid !important;
+        width:34px !important;
+        height:34px !important;
+        place-items:center;
+      }
+      .event-details {
+        grid-column:1 / -1 !important;
+        grid-template-columns:1fr 1fr !important;
+      }
+      .event-chip {
+        border-radius:14px !important;
+        background:rgba(255,255,255,.04) !important;
+      }
+      .finance-number {
+        font-size:32px !important;
+        line-height:.98 !important;
+        color:#fff !important;
+      }
+      .bar {
+        height:10px !important;
+      }
+      .donut {
+        width:150px !important;
+        height:150px !important;
+      }
+      .donut::after {
+        inset:30px !important;
+        background:rgba(29,29,32,.92) !important;
+      }
+      .filters {
+        gap:13px !important;
+      }
+      select,
+      .field {
+        height:42px !important;
+        color:#fff !important;
+      }
+      .btn {
+        height:48px !important;
+        border-radius:16px !important;
+      }
+      .settings-panel {
+        top:auto !important;
+        left:12px !important;
+        right:12px !important;
+        bottom:calc(12px + env(safe-area-inset-bottom)) !important;
+        width:auto !important;
+        border-radius:24px !important;
+        background:rgba(29,29,32,.94) !important;
+      }
+      .sidebar {
+        width:min(320px, 88vw) !important;
+        padding:24px 16px !important;
+      }
+      .sidebar-card {
+        display:block !important;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .main {
+        padding-left:10px !important;
+        padding-right:10px !important;
+      }
+      .kpis,
+      .upcoming {
+        gap:9px !important;
+      }
+      .kpi {
+        min-height:122px !important;
+        padding:14px !important;
+      }
+      .kpi-value {
+        font-size:30px !important;
+      }
+      #eventsSection .event-row,
+      .event-row {
+        grid-template-columns:74px minmax(0,1fr) 32px !important;
+        gap:10px !important;
+      }
+      #eventsSection .thumb,
+      .thumb {
+        width:74px !important;
+        height:68px !important;
+      }
+    }
+
+    /* v27 phone hard-fit: prevent iframe/mobile browser wide layout from leaking */
+    @media (hover:none) and (pointer:coarse), (max-width: 640px) {
+      html,
+      body {
+        width:100% !important;
+        max-width:100% !important;
+        overflow-x:hidden !important;
+      }
+      body {
+        background:
+          radial-gradient(circle at 50% -8%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 30%),
+          radial-gradient(circle at 14% 24%, rgba(255,122,69,.14), transparent 24%),
+          #050506 !important;
+      }
+      .app,
+      .main,
+      .topbar,
+      .kpis,
+      .activity-card,
+      .grid,
+      .grid > *,
+      .page-grid,
+      .panel,
+      .card,
+      aside,
+      section,
+      #upcomingSection,
+      #calendarSection,
+      #eventsSection,
+      #financeSection,
+      #analyticsSection,
+      #documentsSection {
+        width:100% !important;
+        max-width:100% !important;
+        min-width:0 !important;
+      }
+      .main {
+        padding:16px 14px calc(28px + env(safe-area-inset-bottom)) !important;
+      }
+      .topbar {
+        display:grid !important;
+        grid-template-columns:1fr !important;
+        gap:10px !important;
+      }
+      .title-row {
+        grid-template-columns:40px minmax(0,1fr) !important;
+        gap:10px !important;
+      }
+      .mobile-menu {
+        width:40px !important;
+        height:40px !important;
+        border-radius:14px !important;
+      }
+      h1 {
+        font-size:22px !important;
+        line-height:1.02 !important;
+        white-space:normal !important;
+      }
+      .subtitle {
+        font-size:13px !important;
+      }
+      .search-wrap,
+      .controls .select-button,
+      select,
+      .field,
+      .btn {
+        height:42px !important;
+        min-width:0 !important;
+      }
+      .search-wrap input {
+        min-width:0 !important;
+        width:100% !important;
+        overflow:hidden !important;
+        text-overflow:ellipsis !important;
+      }
+      .controls {
+        grid-template-columns:1fr 1fr !important;
+        gap:8px !important;
+      }
+      .controls .select-button:first-child {
+        grid-column:1 / -1 !important;
+      }
+      .kpis {
+        grid-template-columns:repeat(2, minmax(0,1fr)) !important;
+        gap:10px !important;
+      }
+      .kpi {
+        min-height:112px !important;
+        padding:14px !important;
+        border-radius:20px !important;
+      }
+      .kpi-title {
+        font-size:12px !important;
+        line-height:1.15 !important;
+        padding-right:42px !important;
+      }
+      .kpi-value {
+        font-size:30px !important;
+        line-height:.95 !important;
+        margin-top:9px !important;
+      }
+      .kpi-sub {
+        font-size:10px !important;
+      }
+      .kpi-icon {
+        width:38px !important;
+        height:38px !important;
+        right:12px !important;
+        top:12px !important;
+      }
+      .activity-card,
+      .panel {
+        padding:14px !important;
+        border-radius:22px !important;
+      }
+      .panel-title h2 {
+        font-size:17px !important;
+        line-height:1.12 !important;
+      }
+      .activity-layout {
+        grid-template-columns:1fr !important;
+      }
+      .rings-wrap {
+        width:min(54vw, 176px) !important;
+        height:min(54vw, 176px) !important;
+        margin:6px auto 10px !important;
+      }
+      .rings-center {
+        width:44px !important;
+        height:44px !important;
+        inset:calc(50% - 22px) !important;
+        font-size:13px !important;
+        line-height:.9 !important;
+      }
+      .rings-center small {
+        font-size:8px !important;
+        line-height:.9 !important;
+      }
+      .ring-stat {
+        min-height:52px !important;
+        padding:9px 10px !important;
+      }
+      .ring-name {
+        font-size:13px !important;
+      }
+      .grid,
+      .page-grid,
+      .grid > aside:last-child {
+        display:grid !important;
+        grid-template-columns:1fr !important;
+        gap:12px !important;
+      }
+      .grid > aside:first-child {
+        order:3 !important;
+      }
+      .grid > section {
+        order:1 !important;
+      }
+      .grid > aside:last-child {
+        order:2 !important;
+      }
+      .upcoming {
+        display:grid !important;
+        grid-template-columns:repeat(2, minmax(0,1fr)) !important;
+        gap:10px !important;
+        overflow:visible !important;
+        max-width:100% !important;
+        padding:0 !important;
+      }
+      .event-mini {
+        width:100% !important;
+        min-width:0 !important;
+        max-width:100% !important;
+        min-height:154px !important;
+        padding:12px !important;
+        white-space:normal !important;
+        overflow:hidden !important;
+      }
+      .date-num {
+        font-size:29px !important;
+      }
+      .date-month,
+      .mini-place {
+        font-size:10px !important;
+      }
+      .mini-title {
+        font-size:12px !important;
+        line-height:1.12 !important;
+        -webkit-line-clamp:4 !important;
+        word-break:normal !important;
+        overflow-wrap:anywhere !important;
+      }
+      .status {
+        max-width:100% !important;
+        font-size:9px !important;
+        line-height:1.1 !important;
+        white-space:normal !important;
+      }
+      #eventsSection .events-list,
+      .events-list {
+        display:grid !important;
+        grid-template-columns:1fr !important;
+        gap:10px !important;
+        max-height:none !important;
+        overflow:visible !important;
+      }
+      #eventsSection .event-row,
+      .event-row {
+        width:100% !important;
+        max-width:100% !important;
+        min-width:0 !important;
+        display:grid !important;
+        grid-template-columns:72px minmax(0,1fr) 32px !important;
+        gap:10px !important;
+        padding:10px !important;
+        border-radius:18px !important;
+        overflow:hidden !important;
+      }
+      #eventsSection .event-row > div,
+      .event-row > div {
+        min-width:0 !important;
+      }
+      #eventsSection .thumb,
+      .thumb {
+        width:72px !important;
+        height:64px !important;
+        border-radius:15px !important;
+        font-size:11px !important;
+        line-height:1.05 !important;
+        overflow-wrap:anywhere !important;
+      }
+      #eventsSection .event-title,
+      .event-title {
+        width:100% !important;
+        max-width:100% !important;
+        min-width:0 !important;
+        font-size:13px !important;
+        line-height:1.14 !important;
+        display:-webkit-box !important;
+        -webkit-line-clamp:3 !important;
+        -webkit-box-orient:vertical !important;
+        overflow:hidden !important;
+        white-space:normal !important;
+        text-overflow:clip !important;
+        overflow-wrap:anywhere !important;
+      }
+      #eventsSection .meta,
+      .meta {
+        max-width:100% !important;
+        min-width:0 !important;
+        font-size:10px !important;
+        line-height:1.16 !important;
+        gap:5px !important;
+        overflow:hidden !important;
+      }
+      #eventsSection .meta span,
+      .meta span {
+        min-width:0 !important;
+        max-width:100% !important;
+        overflow:hidden !important;
+        text-overflow:ellipsis !important;
+        white-space:nowrap !important;
+      }
+      .round-btn,
+      .event-expand {
+        width:32px !important;
+        height:32px !important;
+      }
+      .event-details {
+        grid-template-columns:1fr !important;
+      }
+      .filters,
+      .filters > div,
+      .filters select,
+      .filters .btn {
+        width:100% !important;
+        max-width:100% !important;
+        min-width:0 !important;
+      }
+      .filters {
+        display:grid !important;
+        grid-template-columns:1fr !important;
+        gap:11px !important;
+      }
+      label {
+        font-size:13px !important;
+        line-height:1.15 !important;
+      }
+      .finance-number {
+        font-size:26px !important;
+        overflow-wrap:anywhere !important;
+      }
+      .donut {
+        width:132px !important;
+        height:132px !important;
+      }
+      .donut::after {
+        inset:27px !important;
+      }
+      .legend-row {
+        grid-template-columns:auto minmax(0,1fr) auto !important;
+        gap:7px !important;
+        font-size:11px !important;
+      }
+      .quarter-row {
+        grid-template-columns:42px minmax(0,1fr) 34px !important;
+        gap:8px !important;
+      }
+      .calendar-head,
+      .calendar-controls {
+        width:100% !important;
+        max-width:100% !important;
+        min-width:0 !important;
+      }
+      .calendar-controls {
+        grid-template-columns:38px minmax(0,1fr) 38px !important;
+      }
+      .calendar-today {
+        grid-column:1 / -1 !important;
+      }
+    }
+
+    /* v28 mobile polish: larger touch scale, top collapsible filters, single-line event titles */
+    .filters-toggle {
+      border:0;
+      background:transparent;
+      color:var(--text);
+      font:inherit;
+      font-weight:950;
+      padding:0;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      cursor:pointer;
+    }
+    .filters-toggle-icon {
+      display:none;
+    }
+    @media (hover:none) and (pointer:coarse), (max-width: 640px) {
+      .main {
+        padding:18px 14px calc(34px + env(safe-area-inset-bottom)) !important;
+      }
+      h1 {
+        font-size:24px !important;
+      }
+      .subtitle {
+        font-size:14px !important;
+      }
+      .search-wrap,
+      .controls .select-button,
+      select,
+      .field,
+      .btn {
+        height:46px !important;
+        font-size:14px !important;
+      }
+      .kpi {
+        min-height:126px !important;
+        padding:16px !important;
+      }
+      .kpi-title {
+        font-size:13px !important;
+      }
+      .kpi-value {
+        font-size:35px !important;
+      }
+      .kpi-sub {
+        font-size:11px !important;
+      }
+      .kpi-icon {
+        width:44px !important;
+        height:44px !important;
+      }
+      .activity-card,
+      .panel {
+        padding:16px !important;
+      }
+      .panel-title h2 {
+        font-size:19px !important;
+      }
+      .rings-wrap {
+        width:min(60vw, 212px) !important;
+        height:min(60vw, 212px) !important;
+      }
+      .rings-center {
+        width:50px !important;
+        height:50px !important;
+        inset:calc(50% - 25px) !important;
+        font-size:15px !important;
+      }
+      .rings-center small {
+        font-size:8px !important;
+      }
+      .ring-name {
+        font-size:16px !important;
+      }
+      .ring-caption {
+        font-size:13px !important;
+      }
+      .ring-stat {
+        min-height:60px !important;
+        padding:11px 12px !important;
+      }
+      .grid > aside:first-child {
+        order:0 !important;
+      }
+      .grid > section {
+        order:1 !important;
+      }
+      .grid > aside:last-child {
+        order:2 !important;
+      }
+      .filters-panel {
+        margin-top:0 !important;
+      }
+      .filters-panel-title {
+        margin-bottom:0 !important;
+        align-items:center !important;
+      }
+      .filters-toggle {
+        width:100%;
+        min-height:46px;
+        justify-content:space-between;
+        color:#fff !important;
+        font-size:17px !important;
+        line-height:1 !important;
+      }
+      .filters-toggle-icon {
+        display:inline-grid;
+        place-items:center;
+        width:28px;
+        height:28px;
+        border-radius:999px;
+        background:rgba(255,255,255,.08);
+        transition:transform .18s ease;
+      }
+      .filters-panel .filters {
+        display:none !important;
+        margin-top:14px;
+      }
+      .filters-panel.open .filters {
+        display:grid !important;
+      }
+      .filters-panel.open .filters-toggle-icon {
+        transform:rotate(180deg);
+      }
+      .event-mini {
+        min-height:178px !important;
+        padding:15px !important;
+      }
+      .date-num {
+        font-size:34px !important;
+      }
+      .mini-title {
+        font-size:14px !important;
+        line-height:1.14 !important;
+      }
+      .mini-place {
+        font-size:12px !important;
+      }
+      .status {
+        font-size:11px !important;
+      }
+      #eventsSection .event-row,
+      .event-row {
+        grid-template-columns:82px minmax(0,1fr) 34px !important;
+        min-height:86px !important;
+        padding:12px !important;
+        gap:12px !important;
+      }
+      #eventsSection .thumb,
+      .thumb {
+        width:82px !important;
+        height:66px !important;
+        font-size:11px !important;
+      }
+      #eventsSection .event-title,
+      .event-title {
+        display:block !important;
+        white-space:nowrap !important;
+        overflow:hidden !important;
+        text-overflow:ellipsis !important;
+        -webkit-line-clamp:unset !important;
+        -webkit-box-orient:initial !important;
+        font-size:16px !important;
+        line-height:1.18 !important;
+        overflow-wrap:normal !important;
+        word-break:normal !important;
+      }
+      #eventsSection .meta,
+      .meta {
+        flex-wrap:nowrap !important;
+        white-space:nowrap !important;
+        font-size:11px !important;
+        line-height:1.2 !important;
+      }
+      #eventsSection .meta span,
+      .meta span {
+        white-space:nowrap !important;
+      }
+    }
+
+  </style>
+</head>
+<body>
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <button class="sidebar-close" onclick="closeSidebar()" aria-label="Закрыть меню">×</button>
+    <div class="brand">
+      <img class="brand-logo" alt="Ямолод" src="data:image/png;base64,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">
+      <div class="brand-sub">экосистема</div>
+    </div>
+    <nav class="nav">
+      <button class="active" data-section="top" onclick="goSection('top', this)"><span class="ico"><svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10.5V20h14v-9.5"/><path d="M9 20v-6h6v6"/></svg></span>Главная</button>
+      <button data-section="calendarSection" onclick="goSection('calendarSection', this)"><span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></span>Календарь</button>
+      <button data-section="eventsSection" onclick="goSection('eventsSection', this)"><span class="ico"><svg viewBox="0 0 24 24"><path d="M5 6h14M5 12h14M5 18h14"/><circle cx="3" cy="6" r=".5"/><circle cx="3" cy="12" r=".5"/><circle cx="3" cy="18" r=".5"/></svg></span>Мероприятия</button>
+      <button data-section="upcomingSection" onclick="goSection('upcomingSection', this)"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>Ближайшие события</button>
+      <button data-section="analyticsSection" onclick="goSection('analyticsSection', this)"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h17"/><rect x="7" y="11" width="3" height="5" rx="1"/><rect x="12" y="8" width="3" height="8" rx="1"/><rect x="17" y="5" width="3" height="11" rx="1"/></svg></span>Аналитика</button>
+      <button data-section="financeSection" onclick="goSection('financeSection', this)"><span class="ico"><svg viewBox="0 0 24 24"><path d="M6 8h8a4 4 0 0 1 0 8H8"/><path d="M8 5v16M6 12h10"/></svg></span>Финансы</button>
+      <button data-section="documentsSection" onclick="goSection('documentsSection', this)"><span class="ico"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></span>Документы</button>
+      <button data-section="settings" onclick="toggleSettings(); closeSidebar(); setActiveNav(this)"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.1 2.1-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V20h-3v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1-2.1-2.1.1-.1A1.7 1.7 0 0 0 5 15a1.7 1.7 0 0 0-1.5-1H3v-3h.5A1.7 1.7 0 0 0 5 10a1.7 1.7 0 0 0-.3-1.9l-.1-.1 2.1-2.1.1.1A1.7 1.7 0 0 0 8.7 6.3a1.7 1.7 0 0 0 1-1.5V4h3v.8a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1 2.1 2.1-.1.1A1.7 1.7 0 0 0 19 10a1.7 1.7 0 0 0 1.5 1h.5v3h-.5a1.7 1.7 0 0 0-1.1 1z"/></svg></span>Настройки</button>
+    </nav>
+    <div class="sidebar-card">
+      <div style="font-weight:950;font-size:22px;line-height:1.05">Экосистема<br>Ямолод</div>
+      <div style="margin-top:10px;opacity:.8">Событийная матрица<br>Школы Ямолод</div>
+    </div>
+  </aside>
+
+  <main class="main" id="top">
+    <div class="topbar">
+      <div class="title-row">
+        <button class="mobile-menu" onclick="openSidebar()" aria-label="Открыть меню"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+        <div>
+          <h1>Событийная матрица</h1>
+          <div class="subtitle">Школы Ямолод</div>
+        </div>
+      </div>
+      <div class="search-wrap">
+        <span>⌕</span>
+        <input id="searchInput" placeholder="Поиск по мероприятиям, ключевым словам, ответственным..." oninput="applyFilters()">
+      </div>
+      <div class="controls">
+        <button class="select-button" onclick="toggleTheme()"><span id="themeIcon">☀</span><span id="themeText">Светлая тема</span></button>
+        <button class="select-button" onclick="reloadData()">Обновить</button><button class="select-button" onclick="toggleSettings()">Настроить</button>
+      </div>
+    </div>
+
+    <section class="kpis" id="kpis">
+      <div class="loading card">Загрузка данных из Google Таблицы...</div>
+    </section>
+
+
+
+    <section class="activity-card card panel" id="activityRingsSection">
+      <div class="panel-title"><h2>Кольца активности проектов</h2></div>
+      <div class="activity-layout">
+        <div class="rings-wrap" id="activityRings"></div>
+        <div class="rings-stats" id="activityRingStats"></div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <aside class="card panel filters-panel" id="filtersPanel">
+        <div class="panel-title filters-panel-title">
+          <button class="filters-toggle" type="button" onclick="toggleMobileFilters()" aria-expanded="false">
+            <span>Фильтры</span><span class="filters-toggle-icon">⌄</span>
+          </button>
+          <a class="link" onclick="resetFilters()">Сбросить все</a>
+        </div>
+        <div class="filters">
+          <div><label>Месяц</label><select id="monthFilter" onchange="applyFilters()"></select></div>
+          <div><label>Квартал</label><select id="quarterFilter" onchange="applyFilters()"></select></div>
+          <div><label>Уровень</label><select id="levelFilter" onchange="applyFilters()"></select></div>
+          <div><label>Категория</label><select id="categoryFilter" onchange="applyFilters()"></select></div>
+          <div><label>Направление / КМФ</label><select id="communityFilter" onchange="applyFilters()"></select></div>
+          <div><label>Муниципалитет / учреждение</label><select id="institutionFilter" onchange="applyFilters()"></select></div>
+          <div><label>Ответственный</label><select id="ownerFilter" onchange="applyFilters()"></select></div>
+          <div>
+            <label>Дополнительно</label>
+            <label class="checkrow"><input id="withFinance" type="checkbox" onchange="applyFilters()"> С финансированием</label>
+            <label class="checkrow"><input id="outboundOnly" type="checkbox" onchange="applyFilters()"> Только выездные</label>
+          </div>
+          <button class="btn" onclick="applyFiltersAndClose()">Применить фильтры</button>
+        </div>
+      </aside>
+
+      <section>
+        <div class="card panel" id="upcomingSection" style="margin-bottom:20px">
+          <div class="panel-title"><h2>Ближайшие события</h2><a class="link" onclick="showAllEvents()">Все события ›</a></div>
+          <div class="upcoming" id="upcoming"></div>
+        </div>
+
+        <div class="page-grid">
+          <div class="card panel" id="calendarSection">
+            <div class="calendar-head"><div><h2>Календарь</h2><div class="calendar-modes"><button class="calendar-mode" data-calendar-view="day" onclick="setCalendarView('day')">День</button><button class="calendar-mode" data-calendar-view="week" onclick="setCalendarView('week')">Неделя</button><button class="calendar-mode active" data-calendar-view="month" onclick="setCalendarView('month')">Месяц</button></div></div><div class="calendar-controls"><button class="calendar-nav" onclick="shiftCalendarMonth(-1)" aria-label="Предыдущий период">‹</button><select class="field" id="calendarMonth" onchange="syncCalendarMonth()"></select><button class="calendar-nav" onclick="shiftCalendarMonth(1)" aria-label="Следующий период">›</button><button class="calendar-today" onclick="goToday()">Сегодня</button></div></div>
+            <div class="calendar-grid" id="calendar"></div>
+            <div class="meta" style="margin-top:14px">
+              <span><span class="mark" style="display:inline-block"></span> Федеральные</span>
+              <span><span class="mark" style="display:inline-block;background:var(--violet)"></span> Региональные</span>
+              <span><span class="mark" style="display:inline-block;background:var(--accent-2)"></span> Муниципальные</span>
+            </div>
+          </div>
+
+          <div class="card panel" id="eventsSection">
+            <div class="panel-title"><h2>Мероприятия <span id="eventsTitleMonth">в месяце</span> <small id="eventsCount" style="color:var(--accent)"></small></h2><a class="link" onclick="toggleListMode()">Карточки / Таблица</a></div>
+            <div class="events-list" id="eventsList"></div>
+          </div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="card panel" id="financeSection" style="margin-bottom:20px">
+          <div class="panel-title"><h2>Финансы 2026 года</h2></div>
+          <div class="subtitle">Общий бюджет</div>
+          <div class="finance-number" id="totalFinance">0 ₽</div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:10px;color:var(--muted);font-size:13px">
+            <span>Согласовано <b id="approvedFinance" style="color:var(--text)">0 ₽</b></span>
+            <span>Остаток <b id="balanceFinance" style="color:var(--text)">0 ₽</b></span>
+          </div>
+          <div class="bar"><span id="financeBar"></span></div>
+          
+        </div>
+
+        <div class="card panel" id="analyticsSection" style="margin-bottom:20px">
+          <div class="panel-title"><h2>Аналитика за 2026 год</h2></div>
+          <div class="donut" id="donut" data-total="0"></div>
+          <div class="legend" id="levelLegend"></div>
+        </div>
+
+        <div class="card panel" id="documentsSection">
+          <div class="panel-title"><h2>Распределение по кварталам</h2></div>
+          <div id="quartersBars"></div>
+        </div>
+      </aside>
+    </section>
+  </main>
+</div>
+
+<div class="settings-panel" id="settingsPanel">
+  <div class="panel-title"><h2>Настройка визуала</h2><a class="link" onclick="toggleSettings()">Закрыть</a></div>
+  <div class="color-row"><label>Акцентный цвет</label><input type="color" id="accentPicker" value="#B80B5C" oninput="setVar('--accent', this.value)"></div>
+  <div class="color-row"><label>Тёплый цвет</label><input type="color" id="warmPicker" value="#FF7A45" oninput="setVar('--accent-2', this.value)"></div>
+  <div class="color-row"><label>Фиолетовый</label><input type="color" id="violetPicker" value="#8F4BD7" oninput="setVar('--violet', this.value)"></div>
+  <label>Скругление карточек</label>
+  <input type="range" min="12" max="32" value="20" oninput="setVar('--radius', this.value + 'px')" style="width:100%">
+  <button class="btn" style="margin-top:18px" onclick="resetVisual()">Вернуть фирменный стиль</button>
+</div>
+
+<script>
+const MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const MONTH_KEYS = ['январ','феврал','март','апрел','ма[йяе]','июн','июл','август','сентябр','октябр','ноябр','декабр'];
+let allRows = [];
+let filteredRows = [];
+let listMode = 'cards';
+let selectedCalendarDay = null;
+let selectedCalendarMonth = null;
+let calendarView = 'month';
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadVisual();
+  reloadData();
+});
+
+function reloadData() {
+  document.getElementById('kpis').innerHTML = '<div class="loading card">Обновляю данные...</div>';
+  fetch('/api/events', { cache: 'no-store' })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('HTTP ' + response.status);
+      }
+      return response.json();
+    })
+    .then(initApp)
+    .catch(err => {
+      document.getElementById('kpis').innerHTML = `<div class="card loading">Ошибка загрузки: ${escapeHtml(err.message || err)}</div>`;
+    });
+}
+
+function initApp(payload) {
+  allRows = (payload.rows || []).map(enrichRow).filter(r => r.title && !String(r.title).toLowerCase().includes('актуально на'));
+  initFilters();
+  applyFilters();
+}
+
+function enrichRow(r) {
+  const dateInfo = parseEventDate(r.dateRaw || [r.title, r.level, r.category].join(' '));
+  const endDateInfo = parseEventDate(r.endDateRaw || '');
+  const fallbackText = [r.title, r.dateRaw, r.level, r.category, r.institution, r.owner, r.community, r.fundingSource, r.place].join(' ');
+  const month = dateInfo.month || detectMonth(fallbackText);
+  const day = dateInfo.day || null;
+  const endMonth = endDateInfo.month || dateInfo.endMonth || month;
+  const endDay = endDateInfo.day || dateInfo.endDay || day;
+  const budget = parseMoney(r.budgetRaw);
+  const estimate = parseMoney(r.estimateRaw);
+  const balance = parseMoney(r.balanceRaw);
+  const reach = parseNumber(r.reachRaw);
+  const levelNorm = normalizeLevel(r.level);
+  return { ...r, month, quarter: month ? Math.ceil(month/3) : null, day, endMonth, endDay, budget, estimate, balance, reach, levelNorm };
+}
+
+function detectMonth(text) {
+  const parsed = parseEventDate(text);
+  if (parsed.month) return parsed.month;
+  const s = String(text || '').toLowerCase();
+  for (let i=0; i<MONTH_KEYS.length; i++) {
+    if (new RegExp(MONTH_KEYS[i]).test(s)) return i+1;
+  }
+  return null;
+}
+
+function detectDay(text) {
+  return parseEventDate(text).day || null;
+}
+
+function parseEventDate(text) {
+  const raw = String(text || '').trim();
+  let iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T\s].*)?$/);
+  if (iso) return { day: validDay(iso[3]), month: Number(iso[2]) };
+
+  const serial = Number(raw.replace(',', '.'));
+  if (serial > 40000 && serial < 60000) {
+    const date = new Date(Math.round((serial - 25569) * 86400 * 1000));
+    return { day: date.getUTCDate(), month: date.getUTCMonth() + 1 };
+  }
+
+  const s = raw.toLowerCase().replace(/ё/g, 'е').replace(/\s+/g, ' ');
+  if (!s) return {};
+  const monthName = '(январ[яеь]*|феврал[яеь]*|март[ае]*|апрел[яеь]*|ма[йяе]*|июн[яье]*|июл[яье]*|август[ае]*|сентябр[яеь]*|октябр[яеь]*|ноябр[яеь]*|декабр[яеь]*)';
+  const monthNum = '(0?[1-9]|1[0-2])';
+
+  let m = s.match(new RegExp('(^|\\D)([0-3]?\\d)\\s*[.\\/]\\s*' + monthNum + '(?:\\s*[.\\/]\\s*(2026|26))?'));
+  if (m) return { day: validDay(m[2]), month: Number(m[3]) };
+
+  m = s.match(new RegExp('(^|\\D)([0-3]?\\d)\\s*(?:[-–—]\\s*([0-3]?\\d))?\\s*' + monthName));
+  if (m) {
+    const month = monthFromWord(m[4]);
+    return { day: validDay(m[2]), month, endDay: validDay(m[3]) || validDay(m[2]), endMonth: month };
+  }
+
+  m = s.match(new RegExp('(^|\\D)([0-3]?\\d)\\s*' + monthName + '\\s*[-–—]\\s*([0-3]?\\d)\\s*' + monthName));
+  if (m) return { day: validDay(m[2]), month: monthFromWord(m[3]), endDay: validDay(m[4]), endMonth: monthFromWord(m[5]) };
+
+  m = s.match(new RegExp('(^|\\D)([0-3]?\\d)\\s*[-–—]\\s*([0-3]?\\d)\\s*' + monthName));
+  if (m) {
+    const month = monthFromWord(m[4]);
+    return { day: validDay(m[2]), month, endDay: validDay(m[3]), endMonth: month };
+  }
+
+  m = s.match(new RegExp(monthName));
+  if (m) return { month: monthFromWord(m[1]) };
+  return {};
+}
+
+function validDay(value) {
+  const day = Number(value);
+  return day >= 1 && day <= 31 ? day : null;
+}
+
+function monthFromWord(value) {
+  const s = String(value || '').toLowerCase().replace(/ё/g, 'е');
+  for (let i=0; i<MONTH_KEYS.length; i++) {
+    if (new RegExp(MONTH_KEYS[i]).test(s)) return i + 1;
+  }
+  return null;
+}
+
+function normalizeLevel(level) {
+  const s = String(level || '').toLowerCase();
+  if (s.includes('федера')) return 'Федеральные';
+  if (s.includes('регион')) return 'Региональные';
+  if (s.includes('муницип')) return 'Муниципальные';
+  if (s.includes('выезд')) return 'Выездные';
+  return level ? trimSpaces(level) : 'Другое';
+}
+
+function parseMoney(v) {
+  const s = String(v || '').replace(/\s/g,'').replace(',', '.');
+  const n = Number(s);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function initFilters() {
+  const defaultMonth = getDefaultMonthName();
+  selectedCalendarMonth = MONTHS.indexOf(defaultMonth) + 1;
+  selectedCalendarDay = null;
+  fillSelect('monthFilter', ['Все месяцы', ...MONTHS], defaultMonth);
+  fillSelect('calendarMonth', ['Все месяцы', ...MONTHS], defaultMonth);
+  fillSelect('quarterFilter', ['Все кварталы','I квартал','II квартал','III квартал','IV квартал'], 'Все кварталы');
+  fillSelect('levelFilter', ['Все уровни', ...unique(allRows.map(r=>r.levelNorm))], 'Все уровни');
+  fillSelect('categoryFilter', ['Все категории', ...unique(allRows.map(r=>trimSpaces(r.category)).filter(Boolean))], 'Все категории');
+  fillSelect('communityFilter', ['Все направления', ...unique(allRows.map(r=>trimSpaces(r.community)).filter(Boolean)).slice(0, 120)], 'Все направления');
+  fillSelect('institutionFilter', ['Все учреждения', ...unique(allRows.map(r=>trimSpaces(r.institution)).filter(Boolean))], 'Все учреждения');
+  fillSelect('ownerFilter', ['Все ответственные', ...unique(allRows.map(r=>trimSpaces(r.owner)).filter(Boolean))], 'Все ответственные');
+}
+
+
+function getDefaultMonthName() {
+  const now = new Date();
+  return now.getFullYear() === 2026 ? MONTHS[now.getMonth()] : 'Июль';
+}
+
+function fillSelect(id, values, selected) {
+  const el = document.getElementById(id);
+  el.innerHTML = values.map(v => `<option ${v===selected ? 'selected' : ''}>${escapeHtml(v)}</option>`).join('');
+}
+
+function applyFilters() {
+  const search = document.getElementById('searchInput').value.toLowerCase().trim();
+  const month = document.getElementById('monthFilter').value;
+  const filterMonthNum = MONTHS.indexOf(month) + 1;
+  if (month === 'Все месяцы' || (filterMonthNum && selectedCalendarMonth && filterMonthNum !== selectedCalendarMonth)) {
+    selectedCalendarDay = null;
+    selectedCalendarMonth = filterMonthNum || selectedCalendarMonth;
+  }
+  const quarter = document.getElementById('quarterFilter').value;
+  const level = document.getElementById('levelFilter').value;
+  const category = document.getElementById('categoryFilter').value;
+  const community = document.getElementById('communityFilter').value;
+  const institution = document.getElementById('institutionFilter').value;
+  const owner = document.getElementById('ownerFilter').value;
+  const withFinance = document.getElementById('withFinance').checked;
+  const outboundOnly = document.getElementById('outboundOnly').checked;
+
+  filteredRows = allRows.filter(r => {
+    const hay = Object.values(r).join(' ').toLowerCase();
+    return (!search || hay.includes(search))
+      && (month === 'Все месяцы' || r.month === MONTHS.indexOf(month)+1)
+      && (quarter === 'Все кварталы' || r.quarter === ['I квартал','II квартал','III квартал','IV квартал'].indexOf(quarter)+1)
+      && (level === 'Все уровни' || r.levelNorm === level)
+      && (category === 'Все категории' || trimSpaces(r.category) === category)
+      && (community === 'Все направления' || trimSpaces(r.community) === community)
+      && (institution === 'Все учреждения' || trimSpaces(r.institution) === institution)
+      && (owner === 'Все ответственные' || trimSpaces(r.owner) === owner)
+      && (!withFinance || r.budget || r.estimate)
+      && (!outboundOnly || r.isOutbound);
+  });
+
+  renderAll();
+}
+
+function renderAll() {
+  renderKpis();
+  renderActivityRings();
+  renderUpcoming();
+  renderCalendar();
+  renderEventsList();
+  renderFinance();
+  renderAnalytics();
+  renderQuarters();
+}
+
+function renderKpis() {
+  const monthName = document.getElementById('monthFilter').value === 'Все месяцы' ? 'выбранном периоде' : document.getElementById('monthFilter').value.toLowerCase();
+  const federal = allRows.filter(r=>r.levelNorm==='Федеральные').length;
+  const regional = allRows.filter(r=>r.levelNorm==='Региональные').length;
+  const municipal = allRows.filter(r=>r.levelNorm==='Муниципальные').length;
+  const outbound = allRows.filter(r=>r.isOutbound).length;
+  const cards = [
+    ['Всего мероприятий', allRows.length, 'в 2026 году', iconSvg('events')],
+    [`Мероприятий в ${monthName}`, filteredRows.length, 'по выбранным фильтрам', iconSvg('calendar')],
+    ['Федеральных', federal, pct(federal, allRows.length), iconSvg('federal')],
+    ['Региональных', regional, pct(regional, allRows.length), iconSvg('regional')],
+    ['Муниципальных', municipal, pct(municipal, allRows.length), iconSvg('municipal')],
+    ['Выездных', outbound, pct(outbound, allRows.length), iconSvg('outbound')]
+  ];
+  document.getElementById('kpis').innerHTML = cards.map(c => `
+    <div class="card kpi">
+      <div><div class="kpi-title">${c[0]}</div><div class="kpi-value">${c[1]}</div><div class="kpi-sub">${c[2]}</div></div>
+      <div class="kpi-icon">${c[3]}</div>
+    </div>`).join('');
+}
+
+
+function renderUpcoming() {
+  const today = new Date();
+  const useToday = today.getFullYear() === 2026;
+  const todayKey = useToday ? dateKey(today.getMonth()+1, today.getDate()) : 0;
+  const selectedMonth = MONTHS.indexOf(document.getElementById('monthFilter').value) + 1;
+
+  let rows = filteredRows
+    .filter(r => r.month && r.day)
+    .map(r => Object.assign({}, r, { _dateKey: dateKey(r.month, r.day) }))
+    .filter(r => !useToday || r._dateKey >= todayKey)
+    .sort((a,b) => a._dateKey - b._dateKey)
+    .slice(0, 10);
+
+  if (!rows.length) {
+    rows = filteredRows
+      .filter(r => r.month && r.day)
+      .map(r => Object.assign({}, r, { _dateKey: dateKey(r.month, r.day) }))
+      .sort((a,b) => a._dateKey - b._dateKey)
+      .slice(0, 10);
+  }
+
+  document.getElementById('upcoming').innerHTML = rows.map(function(r) {
+    return '<button class="event-mini" onclick="selectCalendarDay(' + (r.month || 'null') + ', ' + (r.day || 'null') + ')">' +
+      '<div class="date-badge"><div class="date-num">' + (r.day || '') + '</div><div class="date-month">' + (r.month ? MONTHS[r.month-1].slice(0,3) : '') + '</div></div>' +
+      '<div class="mini-title">' + escapeHtml(cut(r.title, 54)) + '</div>' +
+      '<div class="mini-place">' + escapeHtml(cut(getPlace(r) || r.institution || r.community || '—', 32)) + '</div>' +
+      '<div class="status"><span class="dot"></span>' + escapeHtml(formatDateRange(r)) + '</div>' +
+    '</button>';
+  }).join('') || '<div class="loading">Нет событий по выбранным фильтрам</div>';
+}
+
+function dateKey(month, day) {
+  return (Number(month) || 99) * 100 + (Number(day) || 99);
+}
+
+function renderCalendar() {
+  syncCalendarModeButtons();
+  const pageGrid = document.querySelector('.page-grid');
+  const calendarMonthValue = document.getElementById('calendarMonth').value;
+  if (pageGrid) pageGrid.classList.toggle('calendar-wide', calendarView === 'week' || calendarMonthValue === 'Все месяцы');
+  if (calendarView === 'day') return renderDayCalendar();
+  if (calendarView === 'week') return renderWeekCalendar();
+  return renderMonthCalendar();
+}
+
+function setCalendarView(view) {
+  calendarView = view;
+  if ((view === 'day' || view === 'week') && (!selectedCalendarMonth || !selectedCalendarDay)) {
+    const base = getCalendarBaseDate();
+    selectedCalendarMonth = base.getMonth() + 1;
+    selectedCalendarDay = base.getDate();
+  }
+  renderCalendar();
+}
+
+function syncCalendarModeButtons() {
+  document.querySelectorAll('[data-calendar-view]').forEach(btn => btn.classList.toggle('active', btn.dataset.calendarView === calendarView));
+}
+
+function getCalendarBaseDate() {
+  const today = new Date();
+  if (today.getFullYear() === 2026) return today;
+  const month = selectedCalendarMonth || MONTHS.indexOf(getDefaultMonthName()) + 1 || 7;
+  return new Date(2026, month - 1, selectedCalendarDay || 1);
+}
+
+function renderMonthCalendar() {
+  if (document.getElementById('calendarMonth').value === 'Все месяцы') {
+    return renderAllMonthsCalendar();
+  }
+  const currentMonth = MONTHS.indexOf(document.getElementById('calendarMonth').value)+1 || selectedCalendarMonth || 7;
+  selectedCalendarMonth = currentMonth;
+  const rows = filteredRows.filter(r=>r.month===currentMonth || r.endMonth===currentMonth);
+  const start = new Date(2026, currentMonth-1, 1);
+  const days = new Date(2026, currentMonth, 0).getDate();
+  const today = new Date();
+  const isCurrentYear = today.getFullYear() === 2026;
+  const offset = (start.getDay()+6)%7;
+  const dows = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+  let html = dows.map(d=>'<div class="dow">' + d + '</div>').join('');
+  for (let i=0; i<offset; i++) html += '<div class="day"><span class="day-num" style="opacity:.25"> </span></div>';
+  for (let d=1; d<=days; d++) {
+    const dayRows = rows.filter(r=>eventTouchesDay(r, currentMonth, d));
+    const cls = ['day'];
+    if (dayRows.length) cls.push('has-events');
+    if (isCurrentYear && today.getMonth()+1 === currentMonth && today.getDate() === d) cls.push('is-today');
+    if (selectedCalendarMonth === currentMonth && selectedCalendarDay === d) cls.push('is-selected');
+    html += '<button class="' + cls.join(' ') + '" onclick="selectCalendarDay(' + currentMonth + ', ' + d + ')"><div class="day-num">' + d + '</div><div class="marks">' + dayRows.slice(0,5).map(function(r){ return '<span title="' + escapeHtml(r.title) + '" class="mark" style="background:' + levelColor(r.levelNorm) + '"></span>'; }).join('') + '</div></button>';
+  }
+  const el = document.getElementById('calendar');
+  el.className = 'calendar-grid';
+  el.innerHTML = html;
+}
+
+function renderAllMonthsCalendar() {
+  const today = new Date();
+  let html = '<div class="all-months-view">';
+  for (let m=1; m<=12; m++) html += miniMonthHtml(m, today);
+  html += '</div>';
+  const el = document.getElementById('calendar');
+  el.className = 'calendar-grid is-all-months';
+  el.innerHTML = html;
+}
+
+function renderDayCalendar() {
+  const base = getCalendarBaseDate();
+  const month = selectedCalendarMonth || base.getMonth() + 1;
+  const day = selectedCalendarDay || base.getDate();
+  const rows = filteredRows.filter(r => eventTouchesDay(r, month, day)).sort((a,b)=>String(a.dateRaw||'').localeCompare(String(b.dateRaw||''),'ru'));
+  const weekday = ['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'][new Date(2026, month-1, day).getDay()];
+  const html = '<div class="day-view-card"><div class="day-view-title">' + day + ' ' + MONTHS[month-1].toLowerCase() + ' 2026</div><div class="day-view-sub">' + weekday + '</div><div class="day-agenda">' +
+    (rows.map(agendaItemHtml).join('') || '<div class="loading">На этот день мероприятий по фильтрам нет</div>') + '</div></div>';
+  const el = document.getElementById('calendar');
+  el.className = 'calendar-grid is-day';
+  el.innerHTML = html;
+}
+
+function renderWeekCalendar() {
+  const base = new Date(2026, (selectedCalendarMonth || getCalendarBaseDate().getMonth()+1)-1, selectedCalendarDay || getCalendarBaseDate().getDate());
+  const start = mondayStart(base);
+  const today = new Date();
+  const dows = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+  let html = '<div class="week-view">';
+  for (let i=0; i<7; i++) {
+    const date = addDays(start, i);
+    const month = date.getMonth()+1;
+    const day = date.getDate();
+    const allDayRows = filteredRows.filter(r => eventTouchesDay(r, month, day));
+    const rows = allDayRows.slice(0,5);
+    const cls = today.getFullYear()===2026 && today.getMonth()+1===month && today.getDate()===day ? ' week-day is-today' : ' week-day';
+    html += '<button class="' + cls.trim() + '" onclick="selectCalendarDay(' + month + ', ' + day + ')"><div class="week-date"><b>' + day + '</b><span>' + dows[i] + '</span></div>' +
+      (rows.map(function(r){ return '<div class="week-event"><i style="background:' + levelColor(r.levelNorm) + '"></i><span>' + escapeHtml(cut(r.title, 72)) + '</span></div>'; }).join('') || '<div class="agenda-meta">Нет событий</div>') +
+      (allDayRows.length > rows.length ? '<div class="week-more">+' + (allDayRows.length - rows.length) + ' ещё</div>' : '') +
+      '</button>';
+  }
+  html += '</div>';
+  const el = document.getElementById('calendar');
+  el.className = 'calendar-grid is-week';
+  el.innerHTML = html;
+}
+
+function miniMonthHtml(month, today) {
+  const dows = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+  const start = new Date(2026, month-1, 1);
+  const offset = (start.getDay()+6)%7;
+  const days = new Date(2026, month, 0).getDate();
+  let html = '<div class="mini-month"><div class="mini-month-title">' + MONTHS[month-1] + '</div><div class="mini-month-grid">' + dows.map(d=>'<div class="dow-mini">' + d + '</div>').join('');
+  for (let i=0; i<offset; i++) html += '<div></div>';
+  for (let d=1; d<=days; d++) {
+    const has = filteredRows.some(r => eventTouchesDay(r, month, d));
+    const cls = ['mini-day'];
+    if (has) cls.push('has');
+    if (today.getFullYear()===2026 && today.getMonth()+1===month && today.getDate()===d) cls.push('today');
+    html += '<button class="' + cls.join(' ') + '" onclick="selectCalendarDay(' + month + ', ' + d + ')">' + d + '</button>';
+  }
+  return html + '</div></div>';
+}
+
+function agendaItemHtml(r) {
+  return '<div class="agenda-item"><i class="agenda-color" style="background:' + levelColor(r.levelNorm) + '"></i><div><div class="agenda-title">' + escapeHtml(r.title) + '</div><div class="agenda-meta">' + escapeHtml(formatDateRange(r) || r.dateRaw || 'Дата не указана') + ' · ' + escapeHtml(getPlace(r) || r.levelNorm || 'место уточняется') + '</div></div><div class="agenda-meta">' + escapeHtml(r.institution || r.owner || '') + '</div></div>';
+}
+
+function mondayStart(date) {
+  const d = new Date(date);
+  const diff = (d.getDay()+6)%7;
+  d.setDate(d.getDate() - diff);
+  return d;
+}
+
+function addDays(date, days) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
+function eventTouchesDay(r, month, day) {
+  if (!r.month || !r.day) return false;
+  const start = dateKey(r.month, r.day);
+  const end = dateKey(r.endMonth || r.month, r.endDay || r.day);
+  const current = dateKey(month, day);
+  return current >= start && current <= end;
+}
+
+function selectCalendarDay(month, day) {
+  if (!month || !day) return;
+  selectedCalendarMonth = month;
+  selectedCalendarDay = day;
+  document.getElementById('calendarMonth').value = MONTHS[month-1];
+  document.getElementById('monthFilter').value = MONTHS[month-1];
+  applyFilters();
+}
+
+function renderEventsList() {
+  const month = document.getElementById('monthFilter').value;
+  const title = month === 'Все месяцы' ? 'по фильтрам' : selectedCalendarDay && selectedCalendarMonth === MONTHS.indexOf(month)+1 ? selectedCalendarDay + ' ' + month.toLowerCase() : 'в ' + month.toLowerCase();
+  document.getElementById('eventsTitleMonth').textContent = title;
+  let rows = filteredRows;
+  if (selectedCalendarDay && selectedCalendarMonth) {
+    rows = rows.filter(r => eventTouchesDay(r, selectedCalendarMonth, selectedCalendarDay));
+  }
+  document.getElementById('eventsCount').textContent = rows.length;
+  rows = rows.slice(0, 80);
+  const list = document.getElementById('eventsList');
+  list.classList.toggle('table-mode', listMode === 'table');
+  list.innerHTML = rows.map(function(r, idx) {
+    return '<div class="event-row" id="event-row-' + idx + '">' +
+      '<div class="thumb">' + escapeHtml(cut(r.category || r.levelNorm || 'Событие', 16)) + '</div>' +
+      '<div>' +
+        '<div class="event-title">' + escapeHtml(r.title) + '</div>' +
+        '<div class="meta">' +
+          '<span>' + iconText('calendar') + ' ' + escapeHtml(formatDateRange(r) || r.dateRaw || 'Дата не указана') + '</span>' +
+          '<span>' + iconText('pin') + ' ' + escapeHtml(getPlace(r) || 'место уточняется') + '</span>' +
+          '<span>◇ ' + escapeHtml(r.levelNorm || '—') + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="event-actions"><button class="round-btn event-expand" onclick="toggleEventDetails(' + idx + ')" title="Раскрыть детали">›</button></div>' +
+      '<div class="event-details">' +
+        '<div class="event-chip"><b>Бюджет</b><span>' + (r.budget ? money(r.budget) : 'не указан') + '</span></div>' +
+        '<div class="event-chip"><b>Охват</b><span>' + (r.reach ? numberRu(r.reach) + ' чел.' : 'не указан') + '</span></div>' +
+        '<div class="event-chip"><b>Учреждение</b><span>' + escapeHtml(r.institution || r.holder || 'не указано') + '</span></div>' +
+        '<div class="event-chip"><b>Ответственный</b><span>' + escapeHtml(r.owner || 'не указан') + '</span></div>' +
+      '</div>' +
+    '</div>';
+  }).join('') || '<div class="loading">Нет мероприятий по выбранным фильтрам</div>';
+}
+
+function toggleEventDetails(idx) {
+  const row = document.getElementById('event-row-' + idx);
+  if (row) row.classList.toggle('expanded');
+}
+
+function renderActivityRings() {
+  const total = allRows.length || 1;
+  const groups = [
+    {name:'Федеральные', color:'var(--accent)', radius:82},
+    {name:'Региональные', color:'var(--violet)', radius:60},
+    {name:'Муниципальные', color:'#ff8a4c', radius:38, className:'activity-ring-municipal'}
+  ].map(g => {
+    const value = allRows.filter(r => r.levelNorm === g.name).length;
+    const circumference = 2 * Math.PI * g.radius;
+    const progress = Math.max(0.02, Math.min(1, value / total));
+    return Object.assign(g, {value, circumference, progress});
+  });
+  const rings = '<svg class="rings-svg" viewBox="0 0 210 210">' + groups.map(g =>
+    '<circle class="ring-track" cx="105" cy="105" r="' + g.radius + '"></circle><circle class="ring-value ' + (g.className || '') + '" cx="105" cy="105" r="' + g.radius + '" stroke="' + g.color + '" stroke-dasharray="' + (g.circumference * g.progress).toFixed(1) + ' ' + g.circumference.toFixed(1) + '"></circle>'
+  ).join('') + '</svg><div class="rings-center">' + numberRu(total) + '<small>проектов</small></div>';
+  document.getElementById('activityRings').innerHTML = rings;
+  document.getElementById('activityRingStats').innerHTML = groups.map(g =>
+    '<div class="ring-stat"><span class="ring-dot" style="background:' + g.color + '"></span><div><div class="ring-name">' + g.name + '</div><div class="ring-caption">закрыто ' + numberRu(g.value) + ' из ' + numberRu(total) + '</div></div><div class="ring-count">' + numberRu(g.value) + '</div></div>'
+  ).join('');
+}
+
+function renderFinance() {
+  const total = allRows.reduce((s,r)=>s+r.budget,0);
+  const approved = allRows.reduce((s,r)=>s+r.estimate,0);
+  const balance = allRows.reduce((s,r)=>s+r.balance,0);
+  document.getElementById('totalFinance').textContent = money(total);
+  document.getElementById('approvedFinance').textContent = money(approved);
+  document.getElementById('balanceFinance').textContent = money(balance);
+  const w = total ? Math.min(100, Math.round((approved/total)*100)) : 0;
+  document.getElementById('financeBar').style.width = w + '%';
+}
+
+function renderAnalytics() {
+  const total = allRows.length;
+  document.getElementById('donut').setAttribute('data-total', total);
+  const groups = ['Федеральные','Региональные','Муниципальные','Другое'].map(name => {
+    const value = allRows.filter(r => name==='Другое' ? !['Федеральные','Региональные','Муниципальные'].includes(r.levelNorm) : r.levelNorm===name).length;
+    return {name,value};
+  }).filter(g=>g.value);
+  document.getElementById('levelLegend').innerHTML = groups.map(g => `<div class="legend-row"><span><span class="mark" style="display:inline-block;background:${levelColor(g.name)}"></span> ${g.name}</span><b>${g.value} (${pct(g.value,total)})</b></div>`).join('');
+}
+
+function renderQuarters() {
+  const counts = [1,2,3,4].map(q => allRows.filter(r=>r.quarter===q).length);
+  const max = Math.max(...counts, 1);
+  document.getElementById('quartersBars').innerHTML = counts.map((v,i)=>`
+    <div style="display:grid;grid-template-columns:64px 1fr 40px;gap:10px;align-items:center;margin:14px 0">
+      <b>${i+1} кв.</b><div class="bar"><span style="width:${Math.round(v/max*100)}%"></span></div><b>${v}</b>
+    </div>`).join('');
+}
+
+function syncCalendarMonth() {
+  const m = document.getElementById('calendarMonth').value;
+  if (m === 'Все месяцы') {
+    calendarView = 'month';
+    selectedCalendarDay = null;
+    document.getElementById('monthFilter').value = 'Все месяцы';
+    applyFilters();
+    return;
+  }
+  selectedCalendarMonth = MONTHS.indexOf(m) + 1;
+  selectedCalendarDay = null;
+  document.getElementById('monthFilter').value = m;
+  applyFilters();
+}
+function shiftCalendarMonth(step) {
+  if (document.getElementById('calendarMonth').value === 'Все месяцы') return;
+  if (calendarView === 'day' || calendarView === 'week') {
+    const base = new Date(2026, (selectedCalendarMonth || MONTHS.indexOf(document.getElementById('calendarMonth').value)+1 || 7)-1, selectedCalendarDay || 1);
+    base.setDate(base.getDate() + step * (calendarView === 'week' ? 7 : 1));
+    selectedCalendarMonth = base.getMonth() + 1;
+    selectedCalendarDay = base.getDate();
+    document.getElementById('calendarMonth').value = MONTHS[selectedCalendarMonth-1];
+    document.getElementById('monthFilter').value = MONTHS[selectedCalendarMonth-1];
+    applyFilters();
+    return;
+  }
+  const current = MONTHS.indexOf(document.getElementById('calendarMonth').value);
+  const next = (current + step + 12) % 12;
+  document.getElementById('calendarMonth').value = MONTHS[next];
+  syncCalendarMonth();
+}
+function goToday() {
+  const now = new Date();
+  const month = now.getFullYear() === 2026 ? now.getMonth() + 1 : MONTHS.indexOf(getDefaultMonthName()) + 1;
+  selectedCalendarMonth = month;
+  selectedCalendarDay = now.getFullYear() === 2026 ? now.getDate() : null;
+  document.getElementById('calendarMonth').value = MONTHS[month-1];
+  document.getElementById('monthFilter').value = MONTHS[month-1];
+  applyFilters();
+}
+function showAllEvents(){ selectedCalendarDay = null; document.getElementById('monthFilter').value = 'Все месяцы'; applyFilters(); }
+function setThisMonth(){ goToday(); }
+function resetFilters() {
+  document.getElementById('searchInput').value = '';
+  initFilters();
+  document.getElementById('withFinance').checked = false;
+  document.getElementById('outboundOnly').checked = false;
+  applyFilters();
+}
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
+  html.dataset.theme = next;
+  document.getElementById('themeIcon').textContent = next === 'dark' ? '☾' : '☀';
+  document.getElementById('themeText').textContent = next === 'dark' ? 'Тёмная тема' : 'Светлая тема';
+  localStorage.setItem('yamolod_theme', next);
+}
+function toggleSettings(){ document.getElementById('settingsPanel').classList.toggle('show'); }
+function setVar(name, value){ document.documentElement.style.setProperty(name, value); localStorage.setItem('yamolod_'+name, value); }
+function resetVisual(){
+  [['--accent','#B80B5C'],['--accent-2','#FF7A45'],['--violet','#8F4BD7'],['--radius','20px']].forEach(([k,v])=>setVar(k,v));
+}
+function toggleMobileFilters() {
+  const panel = document.getElementById('filtersPanel');
+  if (!panel) return;
+  const open = panel.classList.toggle('open');
+  const btn = panel.querySelector('.filters-toggle');
+  if (btn) btn.setAttribute('aria-expanded', String(open));
+}
+function applyFiltersAndClose() {
+  applyFilters();
+  const isPhone = window.matchMedia && window.matchMedia('(hover:none) and (pointer:coarse), (max-width: 640px)').matches;
+  if (!isPhone) return;
+  const panel = document.getElementById('filtersPanel');
+  if (!panel) return;
+  panel.classList.remove('open');
+  const btn = panel.querySelector('.filters-toggle');
+  if (btn) btn.setAttribute('aria-expanded', 'false');
+}
+function loadVisual(){
+  const theme = localStorage.getItem('yamolod_theme') || 'light';
+  document.documentElement.dataset.theme = theme;
+  document.getElementById('themeIcon').textContent = theme === 'dark' ? '☾' : '☀';
+  document.getElementById('themeText').textContent = theme === 'dark' ? 'Тёмная тема' : 'Светлая тема';
+  ['--accent','--accent-2','--violet','--radius'].forEach(k => { const v = localStorage.getItem('yamolod_'+k); if (v) document.documentElement.style.setProperty(k, v); });
+}
+function toggleListMode(){ listMode = listMode === 'cards' ? 'table' : 'cards'; renderEventsList(); }
+function openSidebar(){ document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebarBackdrop').classList.add('show'); }
+function closeSidebar(){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarBackdrop').classList.remove('show'); }
+function setActiveNav(btn){ document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active')); if(btn) btn.classList.add('active'); }
+function goSection(id, btn){ setActiveNav(btn); closeSidebar(); const el = document.getElementById(id); if(el) el.scrollIntoView({behavior:'smooth', block:'start'}); }
+function iconSvg(name){
+  const map = {
+    events: '<svg viewBox="0 0 24 24"><path d="M5 6h14M5 12h14M5 18h14"/><circle cx="3" cy="6" r=".5"/><circle cx="3" cy="12" r=".5"/><circle cx="3" cy="18" r=".5"/></svg>',
+    calendar: '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>',
+    federal: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>',
+    regional: '<svg viewBox="0 0 24 24"><path d="M12 21s7-4.6 7-11a7 7 0 1 0-14 0c0 6.4 7 11 7 11z"/><circle cx="12" cy="10" r="2"/></svg>',
+    municipal: '<svg viewBox="0 0 24 24"><path d="M4 21h16M6 21V8l6-4 6 4v13"/><path d="M9 21v-4h6v4M9 10h.01M12 10h.01M15 10h.01M9 13h.01M12 13h.01M15 13h.01"/></svg>',
+    outbound: '<svg viewBox="0 0 24 24"><path d="M6 20h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2z"/><path d="M8 6V4h8v2M8 20v1M16 20v1M7 10h10M7 14h10"/></svg>'
+  };
+  return map[name] || map.events;
+}
+
+function parseNumber(v) {
+  const s = String(v || '').replace(/\s/g,'').replace(',', '.').replace(/[^\d.]/g, '');
+  const n = Number(s);
+  return Number.isFinite(n) ? n : 0;
+}
+function numberRu(n) { return new Intl.NumberFormat('ru-RU', {maximumFractionDigits:0}).format(n || 0); }
+function getPlace(r) { return trimSpaces(r.place || r.location || r.city || r.municipality || r.country || ''); }
+function formatDateRange(r) {
+  if (!r.month && !r.day) return '';
+  const start = (r.day ? r.day + ' ' : '') + (r.month ? MONTHS[r.month-1].toLowerCase() : '');
+  if (r.endDay && (r.endDay !== r.day || r.endMonth !== r.month)) {
+    const endMonth = r.endMonth || r.month;
+    return start + ' - ' + r.endDay + ' ' + (endMonth ? MONTHS[endMonth-1].toLowerCase() : '');
+  }
+  return start;
+}
+function iconText(type) { return type === 'calendar' ? '◷' : type === 'pin' ? '⌖' : '•'; }
+
+function unique(arr){ return [...new Set(arr.filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'ru')); }
+function trimSpaces(s){ return String(s||'').replace(/\s+/g,' ').trim(); }
+function pct(v,t){ return t ? (v/t*100).toFixed(1) + '%' : '0%'; }
+function money(n){ return new Intl.NumberFormat('ru-RU', {maximumFractionDigits:0}).format(n || 0) + ' ₽'; }
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+function cut(s,n){ s=String(s||''); return s.length>n ? s.slice(0,n-1)+'…' : s; }
+function levelColor(level){ return level==='Федеральные' ? 'var(--accent)' : level==='Региональные' ? 'var(--violet)' : level==='Муниципальные' ? 'var(--accent-2)' : '#55A6FF'; }
+</script>
+</body>
+</html>
