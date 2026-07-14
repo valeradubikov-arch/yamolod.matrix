@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: yamolod-event-matrix
+    runtime: node
+    plan: starter
+    buildCommand: npm run check
+    startCommand: node server/index.mjs
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: CACHE_SECONDS
+        value: 60
+      - key: YANDEX_DISK_PATH
+        value: /Loginom/Сводная таблица.json
+      - key: YANDEX_PUBLIC_URL
+        value: https://disk.yandex.ru/d/X2LAAlT4PyzKCA
+      - key: YANDEX_DISK_TOKEN
+        sync: false
