@@ -2579,7 +2579,7 @@
       #eventsSection .event-title {
         font-size:13px !important;
         line-height:1.16 !important;
-        -webkit-line-clamp:2 !important;
+        -webkit-line-clamp:3 !important;
       }
       #eventsSection .meta {
         font-size:8px !important;
@@ -2605,6 +2605,134 @@
       #financeSection .subtitle, #financeSection .finance-number { display:none !important; }
       .bar { height:12px !important; }
       .dashboard-analytics #financeSection { display:block !important; }
+    }
+
+    /* v19 live data visual repair: wider calendar, readable cards */
+    @media (min-width: 1261px) {
+      .grid > section {
+        grid-template-columns:minmax(620px, .96fr) minmax(620px, 1.04fr) !important;
+      }
+      #calendarSection,
+      #eventsSection {
+        min-width:0 !important;
+      }
+      .calendar-grid.is-week {
+        overflow:visible !important;
+      }
+      .week-view {
+        grid-template-columns:repeat(7, minmax(78px, 1fr)) !important;
+        gap:10px !important;
+      }
+      .week-day {
+        min-width:0 !important;
+        overflow:hidden !important;
+      }
+      .week-event {
+        min-width:0 !important;
+        width:100% !important;
+      }
+      .week-event span {
+        display:block !important;
+        min-width:0 !important;
+        white-space:nowrap !important;
+        overflow:hidden !important;
+        text-overflow:ellipsis !important;
+        overflow-wrap:normal !important;
+        word-break:normal !important;
+      }
+      #eventsSection .events-list {
+        gap:14px !important;
+      }
+      #eventsSection .event-row {
+        grid-template-columns:132px minmax(0,1fr) 44px !important;
+        min-height:138px !important;
+        align-items:center !important;
+      }
+      #eventsSection .thumb {
+        width:132px !important;
+        height:86px !important;
+      }
+      #eventsSection .event-title {
+        font-size:17px !important;
+        line-height:1.2 !important;
+        display:-webkit-box !important;
+        -webkit-line-clamp:3 !important;
+        -webkit-box-orient:vertical !important;
+        overflow:hidden !important;
+        overflow-wrap:normal !important;
+        word-break:normal !important;
+      }
+      #eventsSection .event-row.expanded .event-title {
+        display:block !important;
+        -webkit-line-clamp:unset !important;
+        overflow:visible !important;
+      }
+      #eventsSection .meta {
+        font-size:12px !important;
+        line-height:1.25 !important;
+      }
+      #eventsSection .event-row.expanded {
+        min-height:0 !important;
+      }
+      #eventsSection .event-details {
+        grid-template-columns:repeat(3, minmax(0,1fr)) !important;
+        gap:10px !important;
+        padding-top:4px !important;
+      }
+      #eventsSection .event-chip {
+        min-height:74px !important;
+        padding:10px 12px !important;
+      }
+      #eventsSection .event-chip b {
+        font-size:10px !important;
+        margin-bottom:5px !important;
+      }
+      #eventsSection .event-chip span {
+        font-size:12px !important;
+        line-height:1.25 !important;
+        overflow-wrap:normal !important;
+        word-break:normal !important;
+      }
+    }
+
+    @media (min-width: 1261px) and (max-width: 1660px) {
+      .grid > section {
+        grid-template-columns:1fr !important;
+      }
+      #eventsSection {
+        min-height:0 !important;
+      }
+      #eventsSection .events-list {
+        max-height:620px !important;
+      }
+      .calendar-grid.is-week {
+        overflow-x:auto !important;
+        padding-bottom:6px !important;
+      }
+      .week-view {
+        min-width:720px !important;
+      }
+    }
+
+    @media (max-width: 860px) {
+      #eventsSection .event-title {
+        -webkit-line-clamp:3 !important;
+        overflow-wrap:normal !important;
+        word-break:normal !important;
+      }
+      #eventsSection .event-row.expanded .event-title {
+        display:block !important;
+        -webkit-line-clamp:unset !important;
+        overflow:visible !important;
+      }
+      .week-view {
+        grid-template-columns:1fr !important;
+      }
+      .week-event span {
+        white-space:normal !important;
+        overflow-wrap:normal !important;
+        word-break:normal !important;
+      }
     }
 
   </style>
