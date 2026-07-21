@@ -73,8 +73,8 @@ function sendJson(res, data, status = 200) {
 }
 
 async function serveStatic(pathname, res) {
-  const cleanPath = normalize(decodeURIComponent(pathname === '/' ? '/index.html' : pathname));
-  if (cleanPath.includes('..')) {
+  const cleanPath = normalize(decodeURIComponent(pathname === '/' ? 'index.html' : pathname.replace(/^\/+/, '')));
+  if (cleanPath.includes('..') || cleanPath.startsWith('/')) {
     res.writeHead(403);
     res.end('Forbidden');
     return;
@@ -96,6 +96,10 @@ async function serveStatic(pathname, res) {
     });
     createReadStream(filePath).pipe(res);
   } catch {
+    if (!extname(cleanPath)) {
+      return serveStatic('/', res);
+    }
+
     res.writeHead(404, {
       'content-type': 'text/plain; charset=utf-8',
     });

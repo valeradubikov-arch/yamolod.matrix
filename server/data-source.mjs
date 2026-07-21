@@ -15,8 +15,9 @@ export function getConfig(env = process.env) {
 
 export async function loadDashboardData(config = getConfig(), options = {}) {
   const loaded = await loadRawJson(config, options);
-  const rows = extractRows(loaded.data).map(normalizeRow).filter(row => row.title);
-  const diagnostics = buildDiagnostics(rows, loaded);
+  const rawRows = extractRows(loaded.data);
+  const rows = rawRows.map(normalizeRow).filter(row => row.title);
+  const diagnostics = buildDiagnostics(rows, loaded, rawRows);
 
   return {
     updatedAt: getDatasetUpdatedAt(loaded.data, rows) || new Date().toISOString(),
@@ -137,10 +138,12 @@ async function loadLocalJson(path) {
 
 function extractRows(data) {
   if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.rows)) return data.rows;
-  if (Array.isArray(data?.data)) return data.data;
-  if (Array.isArray(data?.items)) return data.items;
-  return [];
+
+  for (const key of ['rows', 'data', 'items', 'result', 'records', 'events']) {
+    if (Array.isArray(data?.[key])) return data[key];
+  }
+
+  return findLargestObjectArray(data);
 }
 
 export function normalizeRow(row) {
@@ -218,7 +221,7 @@ export function normalizeRow(row) {
   };
 }
 
-function buildDiagnostics(rows, loaded) {
+function buildDiagnostics(rows, loaded, rawRows = rows) {
   const ids = new Set();
   const duplicates = [];
   let missingTitle = 0;
@@ -236,12 +239,15 @@ function buildDiagnostics(rows, loaded) {
 
   return {
     rowCount: rows.length,
+    rawRowCount: rawRows.length,
+    droppedRows: Math.max(0, rawRows.length - rows.length),
     uniqueIdCount: ids.size,
     duplicateIds: duplicates.slice(0, 50),
     duplicateCount: duplicates.length,
     missingTitle,
     missingDate,
     sourceError: loaded.sourceError || '',
+    rawShape: describeShape(loaded.data),
   };
 }
 
@@ -256,6 +262,48 @@ function firstValue(row, keys) {
     }
   }
   return '';
+}
+
+function findLargestObjectArray(value, seen = new Set()) {
+  if (!value || typeof value !== 'object' || seen.has(value)) return [];
+  seen.add(value);
+
+  let best = [];
+  if (Array.isArray(value)) {
+    if (value.some(item => item && typeof item === 'object' && !Array.isArray(item))) {
+      best = value;
+    }
+
+    for (const item of value) {
+      const found = findLargestObjectArray(item, seen);
+      if (found.length > best.length) best = found;
+    }
+    return best;
+  }
+
+  for (const item of Object.values(value)) {
+    const found = findLargestObjectArray(item, seen);
+    if (found.length > best.length) best = found;
+  }
+
+  return best;
+}
+
+function describeShape(data) {
+  if (Array.isArray(data)) return { type: 'array', length: data.length };
+  if (!data || typeof data !== 'object') return { type: typeof data };
+  const keys = Object.keys(data).slice(0, 20);
+  const arrays = [];
+
+  for (const [key, value] of Object.entries(data)) {
+    if (Array.isArray(value)) arrays.push({ key, length: value.length });
+  }
+
+  return {
+    type: 'object',
+    keys,
+    arrays,
+  };
 }
 
 function joinValue(value) {
