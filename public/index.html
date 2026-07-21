@@ -3267,6 +3267,193 @@
       }
     }
 
+    /* v31 Figma mobile repair: logo/header separation and compact all-months calendar */
+    @media (max-width: 860px) {
+      .topbar {
+        display:grid !important;
+        grid-template-columns:1fr !important;
+        gap:10px !important;
+      }
+      .title-row {
+        min-height:68px !important;
+        padding:14px !important;
+        border-radius:18px !important;
+        display:grid !important;
+        grid-template-columns:minmax(0,1fr) 44px !important;
+        grid-template-areas:"brand actions" !important;
+        gap:10px !important;
+        align-items:center !important;
+      }
+      .title-row > div {
+        grid-area:brand !important;
+        min-width:0 !important;
+      }
+      .title-row .mobile-menu {
+        grid-area:actions !important;
+        justify-self:end !important;
+        width:32px !important;
+        height:32px !important;
+        border-radius:10px !important;
+        padding:0 !important;
+      }
+      .title-row h1 {
+        display:block !important;
+        margin:0 !important;
+        font-size:0 !important;
+        line-height:0 !important;
+        letter-spacing:0 !important;
+      }
+      .title-row h1::before {
+        content:"ЯМОЛОД" !important;
+        display:block !important;
+        font-size:18px !important;
+        line-height:1 !important;
+        letter-spacing:.02em !important;
+        font-weight:950 !important;
+        color:#fff !important;
+      }
+      .title-row .subtitle {
+        display:none !important;
+      }
+      .title-row > div::after {
+        content:"экосистема" !important;
+        display:block !important;
+        margin-top:4px !important;
+        color:rgba(255,255,255,.62) !important;
+        font-size:10px !important;
+        line-height:1 !important;
+        letter-spacing:.08em !important;
+        text-transform:uppercase !important;
+      }
+      .topbar::after {
+        content:"Событийная матрица" !important;
+        display:block !important;
+        order:2 !important;
+        margin:0 2px !important;
+        color:#fff !important;
+        font-size:20px !important;
+        line-height:1.08 !important;
+        font-weight:950 !important;
+      }
+      .search-wrap {
+        order:3 !important;
+      }
+      .controls {
+        order:4 !important;
+      }
+      .calendar-grid.is-mobile-months {
+        display:block !important;
+        width:100% !important;
+        border:0 !important;
+        background:transparent !important;
+        overflow:visible !important;
+      }
+      .mobile-months-overview {
+        display:grid !important;
+        gap:12px !important;
+        width:100% !important;
+      }
+      .mobile-calendar-summary {
+        display:flex !important;
+        align-items:flex-end !important;
+        justify-content:space-between !important;
+        gap:12px !important;
+        padding:0 2px !important;
+      }
+      .mobile-calendar-summary b {
+        color:#fff !important;
+        font-size:18px !important;
+        line-height:1 !important;
+      }
+      .mobile-calendar-summary span {
+        max-width:170px !important;
+        color:var(--muted) !important;
+        font-size:10px !important;
+        line-height:1.25 !important;
+        text-align:right !important;
+      }
+      .mobile-months-grid {
+        display:grid !important;
+        grid-template-columns:repeat(2, minmax(0,1fr)) !important;
+        gap:8px !important;
+      }
+      .mobile-month-card {
+        min-width:0 !important;
+        min-height:82px !important;
+        padding:10px !important;
+        border:1px solid var(--line) !important;
+        border-radius:14px !important;
+        background:var(--surface-2) !important;
+        color:var(--text) !important;
+        text-align:left !important;
+        display:grid !important;
+        grid-template-columns:1fr auto !important;
+        gap:2px 8px !important;
+        align-content:start !important;
+      }
+      .mobile-month-card.is-current {
+        border-color:rgba(238,45,122,.62) !important;
+        background:linear-gradient(180deg, rgba(238,45,122,.16), rgba(255,255,255,.035)) !important;
+      }
+      .mobile-month-name {
+        min-width:0 !important;
+        overflow:hidden !important;
+        text-overflow:ellipsis !important;
+        white-space:nowrap !important;
+        color:var(--accent) !important;
+        font-size:13px !important;
+        line-height:1.1 !important;
+        font-weight:950 !important;
+      }
+      .mobile-month-card strong {
+        color:#fff !important;
+        font-size:18px !important;
+        line-height:1 !important;
+        justify-self:end !important;
+      }
+      .mobile-month-card small {
+        grid-column:1 / -1 !important;
+        color:var(--muted) !important;
+        font-size:9px !important;
+        line-height:1.1 !important;
+      }
+      .mobile-month-dots {
+        grid-column:1 / -1 !important;
+        display:flex !important;
+        align-items:center !important;
+        gap:4px !important;
+        margin-top:8px !important;
+        color:var(--muted) !important;
+        font-size:8px !important;
+      }
+      .mobile-month-dots i {
+        width:6px !important;
+        height:6px !important;
+        border-radius:50% !important;
+        flex:0 0 auto !important;
+      }
+      .mobile-month-dots em {
+        font-style:normal !important;
+        margin-right:3px !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .mobile-month-card {
+        min-height:78px !important;
+        padding:9px !important;
+      }
+      .mobile-month-name {
+        font-size:12px !important;
+      }
+      .mobile-month-card strong {
+        font-size:16px !important;
+      }
+      .mobile-calendar-summary span {
+        max-width:150px !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -3428,6 +3615,13 @@ let calendarView = 'month';
 document.addEventListener('DOMContentLoaded', () => {
   loadVisual();
   reloadData();
+});
+
+window.addEventListener('resize', () => {
+  window.clearTimeout(window.__yamolodResizeTimer);
+  window.__yamolodResizeTimer = window.setTimeout(() => {
+    if (allRows.length) renderCalendar();
+  }, 140);
 });
 
 function reloadData() {
@@ -3680,10 +3874,14 @@ function renderCalendar() {
   syncCalendarModeButtons();
   const pageGrid = document.querySelector('.page-grid');
   const calendarMonthValue = document.getElementById('calendarMonth').value;
-  if (pageGrid) pageGrid.classList.toggle('calendar-wide', calendarView === 'week' || calendarMonthValue === 'Все месяцы');
+  if (pageGrid) pageGrid.classList.toggle('calendar-wide', !isMobileCalendarLayout() && (calendarView === 'week' || calendarMonthValue === 'Все месяцы'));
   if (calendarView === 'day') return renderDayCalendar();
   if (calendarView === 'week') return renderWeekCalendar();
   return renderMonthCalendar();
+}
+
+function isMobileCalendarLayout() {
+  return window.matchMedia && window.matchMedia('(max-width: 860px)').matches;
 }
 
 function setCalendarView(view) {
@@ -3736,6 +3934,7 @@ function renderMonthCalendar() {
 }
 
 function renderAllMonthsCalendar() {
+  if (isMobileCalendarLayout()) return renderMobileAllMonthsCalendar();
   const today = new Date();
   let html = '<div class="all-months-view">';
   for (let m=1; m<=12; m++) html += miniMonthHtml(m, today);
@@ -3743,6 +3942,44 @@ function renderAllMonthsCalendar() {
   const el = document.getElementById('calendar');
   el.className = 'calendar-grid is-all-months';
   el.innerHTML = html;
+}
+
+function renderMobileAllMonthsCalendar() {
+  const today = new Date();
+  const todayMonth = today.getFullYear() === 2026 ? today.getMonth() + 1 : selectedCalendarMonth || 7;
+  const monthCards = MONTHS.map(function(name, index) {
+    const month = index + 1;
+    const rows = filteredRows.filter(r => r.month === month || r.endMonth === month);
+    const federal = rows.filter(r => r.levelNorm === 'Федеральные').length;
+    const regional = rows.filter(r => r.levelNorm === 'Региональные').length;
+    const municipal = rows.filter(r => r.levelNorm === 'Муниципальные').length;
+    const cls = month === todayMonth ? ' mobile-month-card is-current' : ' mobile-month-card';
+    return '<button class="' + cls.trim() + '" onclick="selectCalendarMonthOnly(' + month + ')">' +
+      '<span class="mobile-month-name">' + name + '</span>' +
+      '<strong>' + rows.length + '</strong>' +
+      '<small>мероприятий</small>' +
+      '<div class="mobile-month-dots">' +
+        '<i style="background:var(--accent)"></i><em>' + federal + '</em>' +
+        '<i style="background:var(--violet)"></i><em>' + regional + '</em>' +
+        '<i style="background:var(--accent-2)"></i><em>' + municipal + '</em>' +
+      '</div>' +
+    '</button>';
+  }).join('');
+  const el = document.getElementById('calendar');
+  el.className = 'calendar-grid is-mobile-months';
+  el.innerHTML = '<div class="mobile-months-overview">' +
+    '<div class="mobile-calendar-summary"><b>2026 год</b><span>Выберите месяц, чтобы открыть календарь</span></div>' +
+    '<div class="mobile-months-grid">' + monthCards + '</div>' +
+  '</div>';
+}
+
+function selectCalendarMonthOnly(month) {
+  selectedCalendarMonth = month;
+  selectedCalendarDay = null;
+  calendarView = 'month';
+  document.getElementById('calendarMonth').value = MONTHS[month-1];
+  document.getElementById('monthFilter').value = MONTHS[month-1];
+  applyFilters();
 }
 
 function renderDayCalendar() {
