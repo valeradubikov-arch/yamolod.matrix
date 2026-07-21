@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="ru" data-theme="light">
+<html lang="ru" data-theme="dark">
 <head>
   <base target="_top">
   <meta charset="UTF-8">
@@ -2095,6 +2095,518 @@
       }
     }
 
+    /* v29 Figma Dashboard v2 refresh */
+    :root {
+      --accent: #ee2d7a;
+      --accent-2: #ff6b4a;
+      --violet: #9a50e6;
+      --blue: #55a9ff;
+      --bg: #0d0d11;
+      --surface: #18171d;
+      --surface-2: #22212a;
+      --text: #ffffff;
+      --muted: #b8b4be;
+      --line: rgba(255,255,255,.13);
+      --shadow: 0 18px 48px rgba(0,0,0,.34);
+      --radius: 18px;
+      --sidebar: #07080a;
+      --sidebar-text: #ffffff;
+    }
+    html[data-theme="light"] {
+      --bg: #f5f3f6;
+      --surface: #ffffff;
+      --surface-2: #f0eef3;
+      --text: #16151b;
+      --muted: #6f6a76;
+      --line: rgba(23,21,29,.12);
+      --shadow: 0 18px 44px rgba(20,20,30,.09);
+      --sidebar: #ffffff;
+      --sidebar-text: #16151b;
+    }
+    html[data-theme="dark"] {
+      --bg: #0d0d11;
+      --surface: #18171d;
+      --surface-2: #25232b;
+      --text: #ffffff;
+      --muted: #b8b4be;
+      --line: rgba(255,255,255,.13);
+      --sidebar: #07080a;
+      --sidebar-text: #ffffff;
+    }
+    body {
+      background:
+        linear-gradient(90deg, rgba(89,41,28,.45) 0%, rgba(128,10,64,.20) 35%, rgba(13,13,17,0) 100%),
+        var(--bg) !important;
+      font-family: Manrope, Inter, "Segoe UI", Arial, sans-serif;
+    }
+    .app { grid-template-columns: 280px minmax(0,1fr) !important; }
+    .sidebar {
+      padding:28px 20px !important;
+      background:
+        linear-gradient(180deg, #0a0a0d 0%, #0a0a0d 58%, #660533 100%) !important;
+      border-right:1px solid rgba(255,255,255,.08) !important;
+      gap:12px;
+    }
+    .brand { margin:0 0 0 !important; letter-spacing:0 !important; }
+    .brand-logo { width:104px !important; margin-bottom:0 !important; }
+    .brand-sub { display:none !important; }
+    .nav { margin-top:0 !important; gap:12px !important; }
+    .nav button {
+      height:48px !important;
+      padding:0 14px !important;
+      border-radius:14px !important;
+      font-size:13px !important;
+      font-weight:800 !important;
+      gap:14px !important;
+      color:#e0dee8 !important;
+    }
+    .nav button.active,
+    .nav button:hover {
+      color:#fff !important;
+      background:#ee2d7a !important;
+      box-shadow:none !important;
+    }
+    .ico { width:24px !important; height:24px !important; border-radius:8px !important; background:transparent !important; }
+    .sidebar-card {
+      width:240px;
+      min-height:120px;
+      margin: auto 0 0 !important;
+      padding:16px !important;
+      border-radius:16px !important;
+      background:linear-gradient(135deg, #8c0a47, #59291c) !important;
+    }
+    .main {
+      padding:24px 20px !important;
+      background:
+        linear-gradient(90deg, rgba(89,41,28,.45) 0%, rgba(128,10,64,.20) 35%, rgba(13,13,17,0) 100%),
+        var(--bg) !important;
+    }
+    .topbar {
+      display:grid !important;
+      grid-template-columns: 402px minmax(300px, 1fr) auto !important;
+      gap:16px !important;
+      min-height:88px;
+      align-items:center !important;
+      padding-bottom:16px !important;
+      border-bottom:0 !important;
+    }
+    .title-row {
+      display:grid !important;
+      grid-template-columns:56px minmax(0,1fr);
+      gap:16px;
+      align-items:center;
+    }
+    .mobile-menu {
+      display:grid !important;
+      place-items:center;
+      width:56px !important;
+      height:56px !important;
+      border:0;
+      border-radius:16px !important;
+      background:var(--surface) !important;
+      color:var(--text) !important;
+    }
+    .mobile-menu svg { width:24px; height:24px; stroke:currentColor; fill:none; stroke-width:2.4; stroke-linecap:round; }
+    h1 { font-size:24px !important; line-height:1.08 !important; letter-spacing:0 !important; color:var(--text) !important; }
+    .subtitle { font-size:11px !important; margin-top:4px !important; color:var(--muted) !important; }
+    .search-wrap {
+      height:52px !important;
+      border-radius:15px !important;
+      background:var(--surface) !important;
+      border:1px solid var(--line) !important;
+      box-shadow:none !important;
+    }
+    .search-wrap input { font-size:12px !important; color:var(--text) !important; }
+    .controls { gap:8px !important; flex-wrap:nowrap !important; justify-content:flex-end !important; }
+    .select-button {
+      height:48px !important;
+      border-radius:14px !important;
+      background:var(--surface) !important;
+      border:1px solid var(--line) !important;
+      box-shadow:none !important;
+      font-size:12px !important;
+      font-weight:800 !important;
+      color:var(--text) !important;
+      padding:0 18px !important;
+    }
+    .kpis {
+      grid-template-columns:repeat(6, minmax(0, 1fr)) !important;
+      gap:16px !important;
+      margin-top:0 !important;
+    }
+    .card {
+      background:var(--surface) !important;
+      border:1px solid var(--line) !important;
+      box-shadow:none !important;
+      backdrop-filter:none !important;
+    }
+    .kpi {
+      min-height:128px !important;
+      padding:18px !important;
+      border-radius:18px !important;
+      align-items:center !important;
+    }
+    .kpi-title { font-size:11px !important; font-weight:800 !important; color:var(--muted) !important; }
+    .kpi-value { font-size:26px !important; line-height:1 !important; margin-top:7px !important; letter-spacing:0 !important; color:var(--text) !important; }
+    .kpi-sub { font-size:10px !important; color:var(--muted) !important; }
+    .kpi-icon { width:48px !important; height:48px !important; border-radius:15px !important; }
+    .dashboard-analytics {
+      display:grid;
+      grid-template-columns:minmax(520px, 920px) minmax(360px, 1fr);
+      gap:16px;
+      margin-top:16px;
+    }
+    .activity-card { margin-top:0 !important; min-height:260px; }
+    .activity-card .panel-title, #financeSection .panel-title { margin-bottom:14px !important; }
+    .activity-layout { grid-template-columns:250px 1fr !important; gap:22px !important; }
+    .rings-wrap { width:230px !important; height:210px !important; }
+    .rings-svg { transform:rotate(-90deg); }
+    .rings-center { background:transparent !important; box-shadow:none !important; font-size:18px !important; line-height:.92 !important; }
+    .rings-center small { margin-top:3px !important; font-size:10px !important; line-height:1 !important; }
+    .ring-track { stroke:rgba(255,255,255,.14) !important; stroke-width:22 !important; }
+    .ring-value { stroke-width:22 !important; filter:none !important; }
+    .ring-stat {
+      min-height:48px;
+      border-radius:12px !important;
+      padding:10px 12px !important;
+      background:var(--surface-2) !important;
+    }
+    .ring-name { font-size:13px !important; }
+    .ring-caption { font-size:11px !important; }
+    .ring-count { font-size:13px !important; }
+    .grid {
+      grid-template-columns:300px minmax(0, 1fr) !important;
+      gap:16px !important;
+      margin-top:16px !important;
+    }
+    .grid > aside:last-child { display:none !important; }
+    .grid > section {
+      display:grid;
+      grid-template-columns:500px minmax(480px, 1fr);
+      gap:16px;
+      align-items:start;
+    }
+    #upcomingSection { display:none !important; }
+    .page-grid {
+      display:contents !important;
+    }
+    .panel { padding:16px !important; border-radius:18px !important; }
+    .panel-title h2 {
+      font-size:18px !important;
+      line-height:1.2 !important;
+      letter-spacing:0 !important;
+      text-transform:none !important;
+      color:var(--text) !important;
+    }
+    .filters { gap:12px !important; }
+    label { font-size:11px !important; margin-bottom:7px !important; color:var(--text) !important; }
+    select, .field {
+      height:46px !important;
+      border-radius:12px !important;
+      background:var(--surface-2) !important;
+      border:1px solid var(--line) !important;
+      color:var(--text) !important;
+    }
+    .checkrow { font-size:11px !important; color:var(--muted) !important; }
+    .btn { height:52px !important; border-radius:14px !important; background:#ee2d7a !important; box-shadow:none !important; }
+    .calendar-head { display:grid !important; grid-template-columns:1fr !important; gap:14px !important; margin-bottom:14px !important; }
+    .calendar-modes { margin-top:10px !important; height:42px; background:var(--surface-2) !important; border:1px solid var(--line) !important; }
+    .calendar-mode { height:32px !important; padding:0 18px !important; font-size:12px !important; }
+    .calendar-controls { display:grid !important; grid-template-columns:40px minmax(0,1fr) 40px auto !important; gap:8px !important; }
+    .calendar-nav, .calendar-today { height:40px !important; border-radius:12px !important; min-width:40px !important; }
+    #calendar.calendar-grid:not(.is-day):not(.is-week):not(.is-all-months) {
+      grid-template-columns:repeat(7, minmax(0, 1fr)) !important;
+      border-radius:14px !important;
+    }
+    .dow { min-height:34px !important; padding:9px 4px !important; font-size:11px !important; }
+    .day { min-height:71px !important; padding:8px !important; }
+    .day-num { font-size:12px !important; }
+    .marks { gap:5px !important; margin-top:14px !important; }
+    .mark { width:6px !important; height:6px !important; }
+    .calendar-grid.is-week { border:0 !important; overflow:visible !important; }
+    .week-view { display:grid !important; grid-template-columns:repeat(7, minmax(0,1fr)) !important; gap:8px !important; }
+    .week-day {
+      min-height:360px !important;
+      padding:12px !important;
+      border-radius:18px !important;
+      background:var(--surface-2) !important;
+      border:1px solid var(--line) !important;
+      align-content:start;
+    }
+    .week-date {
+      height:42px !important;
+      min-height:42px !important;
+      margin:-12px -12px 12px !important;
+      padding:0 12px !important;
+      display:flex !important;
+      align-items:center !important;
+      justify-content:space-between !important;
+      border-bottom:1px solid var(--line) !important;
+    }
+    .week-date b { font-size:20px !important; line-height:1 !important; }
+    .week-date span { font-size:11px !important; align-self:center !important; }
+    .week-event { font-size:10px !important; line-height:1.12 !important; padding:6px 0 !important; }
+    #eventsSection { min-height:868px; }
+    #eventsSection .panel-title h2 { text-transform:uppercase !important; font-size:19px !important; }
+    #eventsSection .events-list {
+      max-height:760px !important;
+      overflow:auto !important;
+      display:grid !important;
+      gap:16px !important;
+      padding-right:6px;
+    }
+    #eventsSection .event-row {
+      display:grid !important;
+      grid-template-columns:112px minmax(0,1fr) 44px !important;
+      gap:16px !important;
+      min-height:128px !important;
+      padding:16px !important;
+      border:1px solid var(--line) !important;
+      border-radius:18px !important;
+      background:var(--surface) !important;
+      align-items:center !important;
+      margin:0 !important;
+    }
+    #eventsSection .thumb {
+      width:112px !important;
+      height:80px !important;
+      border-radius:16px !important;
+      font-size:13px !important;
+      line-height:1.08 !important;
+    }
+    #eventsSection .event-title {
+      font-size:15px !important;
+      line-height:1.18 !important;
+      display:-webkit-box !important;
+      -webkit-line-clamp:2 !important;
+      -webkit-box-orient:vertical !important;
+      overflow:hidden !important;
+    }
+    #eventsSection .meta { font-size:11px !important; gap:9px !important; color:var(--muted) !important; }
+    .round-btn { width:44px !important; height:44px !important; border-radius:999px !important; }
+    .event-details {
+      grid-column:1 / -1 !important;
+      grid-template-columns:repeat(6, minmax(0,1fr)) !important;
+      gap:8px !important;
+      margin-top:0 !important;
+    }
+    .event-row.expanded { min-height:276px !important; align-items:start !important; }
+    .event-chip {
+      min-height:104px !important;
+      border-radius:12px !important;
+      background:var(--surface-2) !important;
+      padding:12px 10px !important;
+    }
+    .event-chip b { font-size:9px !important; color:var(--muted) !important; }
+    .event-chip span { font-size:11px !important; line-height:1.2 !important; color:var(--text) !important; }
+    .finance-number { font-size:26px !important; }
+    .bar { height:12px !important; }
+    #analyticsSection, #documentsSection { display:none !important; }
+
+    @media (max-width: 1660px) {
+      .app { grid-template-columns:240px minmax(0,1fr) !important; }
+      .sidebar { padding-left:16px !important; padding-right:16px !important; }
+      .nav button { width:208px !important; }
+      .sidebar-card { width:208px; }
+      .topbar { grid-template-columns:350px minmax(260px,1fr) auto !important; }
+      .kpis { grid-template-columns:repeat(3, minmax(0,1fr)) !important; }
+      .dashboard-analytics { grid-template-columns:1fr 1fr; }
+      .grid > section { grid-template-columns:minmax(360px, .88fr) minmax(420px,1.12fr); }
+    }
+    @media (max-width: 1260px) {
+      .app { grid-template-columns:1fr !important; }
+      .sidebar { position:fixed !important; left:0; top:0; width:min(286px,86vw) !important; transform:translateX(-105%); z-index:30; height:100dvh; }
+      .sidebar.open { transform:translateX(0); }
+      .topbar { grid-template-columns:1fr !important; }
+      .controls { justify-content:flex-start !important; }
+      .dashboard-analytics { grid-template-columns:1fr !important; }
+      .grid { grid-template-columns:1fr !important; }
+      .grid > section { grid-template-columns:1fr 1fr; }
+    }
+    @media (max-width: 860px) {
+      body {
+        background:
+          radial-gradient(circle at 48% -20%, rgba(238,45,122,.20), transparent 36%),
+          #0d0d11 !important;
+      }
+      .main { padding:16px !important; }
+      .topbar {
+        min-height:0;
+        gap:12px !important;
+        padding:0 !important;
+        margin-bottom:0 !important;
+      }
+      .title-row {
+        min-height:68px;
+        padding:14px !important;
+        border-radius:18px;
+        background:linear-gradient(90deg, #0f0d14 0%, #570a2b 62%, #732e1a 100%);
+        grid-template-columns:minmax(0,1fr) 72px !important;
+        grid-template-areas:"brand actions";
+      }
+      .title-row .mobile-menu {
+        grid-area:actions;
+        justify-self:end;
+        width:32px !important;
+        height:32px !important;
+        border-radius:10px !important;
+        background:transparent !important;
+      }
+      .title-row > div {
+        grid-area:brand;
+        min-width:0;
+      }
+      h1 { font-size:0 !important; }
+      h1::before {
+        content:"ЯМОЛОД";
+        font-size:18px;
+        line-height:1;
+        letter-spacing:.02em;
+        font-weight:900;
+      }
+      .subtitle { display:none !important; }
+      .title-row > div::after {
+        content:"экосистема";
+        display:block;
+        margin-top:4px;
+        color:rgba(255,255,255,.62);
+        font-size:10px;
+        text-transform:uppercase;
+      }
+      .topbar::after {
+        content:"Событийная матрица";
+        order:2;
+        display:block;
+        font-weight:900;
+        font-size:20px;
+        line-height:1.1;
+        color:#fff;
+      }
+      .search-wrap { order:3; height:52px !important; border-radius:16px !important; }
+      .controls { order:4; display:grid !important; grid-template-columns:1fr 1fr !important; gap:10px !important; }
+      .controls .select-button { height:44px !important; border-radius:15px !important; }
+      .controls .select-button:first-child { grid-column:1 / -1 !important; }
+      .kpis {
+        grid-template-columns:repeat(2, minmax(0,1fr)) !important;
+        gap:16px !important;
+        margin-top:12px !important;
+      }
+      .kpi:nth-child(n+3) { display:none !important; }
+      .kpi {
+        min-height:102px !important;
+        padding:14px !important;
+        border-radius:18px !important;
+        display:block !important;
+      }
+      .kpi-icon { display:none !important; }
+      .kpi-title { font-size:11px !important; padding-right:0 !important; }
+      .kpi-value { font-size:27px !important; margin-top:5px !important; }
+      .kpi-sub { font-size:10px !important; }
+      .dashboard-analytics { margin-top:12px; gap:12px; }
+      .activity-card {
+        min-height:192px !important;
+        padding:16px !important;
+        border-radius:18px !important;
+      }
+      .activity-layout { grid-template-columns:136px 1fr !important; gap:14px !important; align-items:center !important; }
+      .rings-wrap { width:136px !important; height:136px !important; margin:0 !important; }
+      .ring-track, .ring-value { stroke-width:18 !important; }
+      .rings-center { display:none !important; }
+      .rings-stats { gap:8px !important; }
+      .ring-stat { min-height:22px !important; padding:0 !important; border:0 !important; background:transparent !important; }
+      .ring-name, .ring-caption, .ring-count { font-size:10px !important; }
+      .ring-caption { display:none !important; }
+      .grid { margin-top:12px !important; gap:12px !important; }
+      .grid > aside:first-child { order:1 !important; }
+      .grid > section { order:2 !important; display:grid !important; grid-template-columns:1fr !important; gap:12px !important; }
+      .filters-panel {
+        padding:0 !important;
+        overflow:hidden;
+      }
+      .filters-panel-title { margin:0 !important; padding:10px 14px !important; }
+      .filters-toggle {
+        height:44px !important;
+        display:grid !important;
+        grid-template-columns:1fr 44px;
+        align-items:center;
+        width:100%;
+        text-align:left;
+      }
+      .filters-toggle span:first-child::after {
+        content:"Июль · Все уровни · Все учреждения";
+        display:block;
+        margin-top:2px;
+        color:var(--muted);
+        font-size:9px;
+        font-weight:500;
+      }
+      .filters-panel .link { display:none !important; }
+      .filters-panel .filters {
+        display:none !important;
+        padding:0 14px 14px !important;
+      }
+      .filters-panel.open .filters { display:grid !important; }
+      #calendarSection { order:1; height:auto !important; }
+      #eventsSection { order:2; min-height:0 !important; }
+      .calendar-head { gap:10px !important; }
+      .calendar-head h2 { font-size:15px !important; }
+      .calendar-modes { display:none !important; }
+      .calendar-controls { grid-template-columns:40px minmax(0,1fr) 40px !important; gap:6px !important; }
+      .calendar-today { grid-column:1 / -1 !important; height:38px !important; }
+      #calendar.calendar-grid:not(.is-day):not(.is-week):not(.is-all-months) {
+        border-radius:14px !important;
+      }
+      .dow { min-height:28px !important; padding:7px 2px !important; font-size:10px !important; }
+      .day { min-height:44px !important; padding:6px 4px !important; }
+      .day-num { font-size:11px !important; }
+      .marks { gap:3px !important; margin-top:6px !important; }
+      .mark { width:6px !important; height:6px !important; }
+      #eventsSection .panel-title h2 { font-size:16px !important; text-transform:none !important; }
+      #eventsSection .events-list { max-height:none !important; overflow:visible !important; gap:12px !important; padding-right:0 !important; }
+      #eventsSection .event-row {
+        grid-template-columns:80px minmax(0,1fr) 40px !important;
+        min-height:112px !important;
+        padding:14px !important;
+        gap:10px !important;
+        border-radius:16px !important;
+      }
+      #eventsSection .thumb {
+        width:80px !important;
+        height:58px !important;
+        border-radius:12px !important;
+        font-size:10.5px !important;
+      }
+      #eventsSection .event-title {
+        font-size:13px !important;
+        line-height:1.16 !important;
+        -webkit-line-clamp:2 !important;
+      }
+      #eventsSection .meta {
+        font-size:8px !important;
+        line-height:1.2 !important;
+        gap:5px !important;
+      }
+      #eventsSection .meta span:nth-child(2) { display:none !important; }
+      .round-btn { width:44px !important; height:44px !important; }
+      .event-row.expanded { min-height:274px !important; }
+      .event-details { grid-template-columns:1fr 1fr !important; gap:8px !important; }
+      .event-chip {
+        min-height:52px !important;
+        padding:7px 9px !important;
+        border-radius:10px !important;
+      }
+      .event-chip b { font-size:7px !important; }
+      .event-chip span { font-size:9px !important; line-height:1.15 !important; }
+      #financeSection {
+        min-height:176px;
+        padding:16px !important;
+        border-radius:18px !important;
+      }
+      #financeSection .subtitle, #financeSection .finance-number { display:none !important; }
+      .bar { height:12px !important; }
+      .dashboard-analytics #financeSection { display:block !important; }
+    }
+
   </style>
 </head>
 <body>
@@ -2147,12 +2659,25 @@
 
 
 
-    <section class="activity-card card panel" id="activityRingsSection">
-      <div class="panel-title"><h2>Кольца активности проектов</h2></div>
-      <div class="activity-layout">
-        <div class="rings-wrap" id="activityRings"></div>
-        <div class="rings-stats" id="activityRingStats"></div>
-      </div>
+    <section class="dashboard-analytics">
+      <section class="activity-card card panel" id="activityRingsSection">
+        <div class="panel-title"><h2>Кольца активности проектов</h2></div>
+        <div class="activity-layout">
+          <div class="rings-wrap" id="activityRings"></div>
+          <div class="rings-stats" id="activityRingStats"></div>
+        </div>
+      </section>
+
+      <section class="card panel" id="financeSection">
+        <div class="panel-title"><h2>Исполнение договоров</h2><a class="link" id="contractsSummary">2026 год</a></div>
+        <div class="subtitle">Общий бюджет</div>
+        <div class="finance-number" id="totalFinance">0 ₽</div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px;color:var(--muted);font-size:13px">
+          <span>Согласовано <b id="approvedFinance" style="color:var(--text)">0 ₽</b></span>
+          <span>Остаток <b id="balanceFinance" style="color:var(--text)">0 ₽</b></span>
+        </div>
+        <div class="bar"><span id="financeBar"></span></div>
+      </section>
     </section>
 
     <section class="grid">
@@ -2205,18 +2730,6 @@
       </section>
 
       <aside>
-        <div class="card panel" id="financeSection" style="margin-bottom:20px">
-          <div class="panel-title"><h2>Финансы 2026 года</h2></div>
-          <div class="subtitle">Общий бюджет</div>
-          <div class="finance-number" id="totalFinance">0 ₽</div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:10px;color:var(--muted);font-size:13px">
-            <span>Согласовано <b id="approvedFinance" style="color:var(--text)">0 ₽</b></span>
-            <span>Остаток <b id="balanceFinance" style="color:var(--text)">0 ₽</b></span>
-          </div>
-          <div class="bar"><span id="financeBar"></span></div>
-          
-        </div>
-
         <div class="card panel" id="analyticsSection" style="margin-bottom:20px">
           <div class="panel-title"><h2>Аналитика за 2026 год</h2></div>
           <div class="donut" id="donut" data-total="0"></div>
@@ -2447,17 +2960,18 @@ function renderAll() {
 
 function renderKpis() {
   const monthName = document.getElementById('monthFilter').value === 'Все месяцы' ? 'выбранном периоде' : document.getElementById('monthFilter').value.toLowerCase();
-  const federal = allRows.filter(r=>r.levelNorm==='Федеральные').length;
-  const regional = allRows.filter(r=>r.levelNorm==='Региональные').length;
-  const municipal = allRows.filter(r=>r.levelNorm==='Муниципальные').length;
+  const today = getCalendarBaseDate();
+  const activeToday = allRows.filter(r => eventTouchesDay(r, today.getMonth()+1, today.getDate())).length;
+  const reach = allRows.reduce((sum, r) => sum + (Number(r.reach) || 0), 0);
   const outbound = allRows.filter(r=>r.isOutbound).length;
+  const actions = allRows.filter(r => String(r.category || '').toLowerCase().includes('акци') || String(r.level || '').toLowerCase().includes('акци')).length;
   const cards = [
     ['Всего мероприятий', allRows.length, 'в 2026 году', iconSvg('events')],
-    [`Мероприятий в ${monthName}`, filteredRows.length, 'по выбранным фильтрам', iconSvg('calendar')],
-    ['Федеральных', federal, pct(federal, allRows.length), iconSvg('federal')],
-    ['Региональных', regional, pct(regional, allRows.length), iconSvg('regional')],
-    ['Муниципальных', municipal, pct(municipal, allRows.length), iconSvg('municipal')],
-    ['Выездных', outbound, pct(outbound, allRows.length), iconSvg('outbound')]
+    [`В ${monthName}`, filteredRows.length, 'по дате начала', iconSvg('calendar')],
+    ['Активны сегодня', activeToday, 'на ' + today.getDate() + ' ' + MONTHS[today.getMonth()].toLowerCase(), iconSvg('regional')],
+    ['Плановый охват', reach ? numberRu(reach) : '—', 'участника', iconSvg('federal')],
+    ['Выездные', outbound, pct(outbound, allRows.length), iconSvg('outbound')],
+    ['Акции', actions, 'отдельная категория', iconSvg('municipal')]
   ];
   document.getElementById('kpis').innerHTML = cards.map(c => `
     <div class="card kpi">
@@ -2688,6 +3202,8 @@ function renderEventsList() {
         '<div class="event-chip"><b>Охват</b><span>' + (r.reach ? numberRu(r.reach) + ' чел.' : 'не указан') + '</span></div>' +
         '<div class="event-chip"><b>Учреждение</b><span>' + escapeHtml(r.institution || r.holder || 'не указано') + '</span></div>' +
         '<div class="event-chip"><b>Ответственный</b><span>' + escapeHtml(r.owner || 'не указан') + '</span></div>' +
+        '<div class="event-chip"><b>Даты</b><span>' + escapeHtml(formatDateRange(r) || r.dateRaw || 'не указаны') + '</span></div>' +
+        '<div class="event-chip"><b>Территория</b><span>' + escapeHtml(getPlace(r) || 'не указана') + '</span></div>' +
       '</div>' +
     '</div>';
   }).join('') || '<div class="loading">Нет мероприятий по выбранным фильтрам</div>';
@@ -2703,9 +3219,12 @@ function renderActivityRings() {
   const groups = [
     {name:'Федеральные', color:'var(--accent)', radius:82},
     {name:'Региональные', color:'var(--violet)', radius:60},
-    {name:'Муниципальные', color:'#ff8a4c', radius:38, className:'activity-ring-municipal'}
+    {name:'Муниципальные', color:'#ff8a4c', radius:38, className:'activity-ring-municipal'},
+    {name:'Другое', color:'var(--blue)', radius:20}
   ].map(g => {
-    const value = allRows.filter(r => r.levelNorm === g.name).length;
+    const value = g.name === 'Другое'
+      ? allRows.filter(r => !['Федеральные','Региональные','Муниципальные'].includes(r.levelNorm)).length
+      : allRows.filter(r => r.levelNorm === g.name).length;
     const circumference = 2 * Math.PI * g.radius;
     const progress = Math.max(0.02, Math.min(1, value / total));
     return Object.assign(g, {value, circumference, progress});
@@ -2726,6 +3245,8 @@ function renderFinance() {
   document.getElementById('totalFinance').textContent = money(total);
   document.getElementById('approvedFinance').textContent = money(approved);
   document.getElementById('balanceFinance').textContent = money(balance);
+  const contractsSummary = document.getElementById('contractsSummary');
+  if (contractsSummary) contractsSummary.textContent = allRows.length + ' событий · ' + money(total);
   const w = total ? Math.min(100, Math.round((approved/total)*100)) : 0;
   document.getElementById('financeBar').style.width = w + '%';
 }
@@ -2829,7 +3350,7 @@ function applyFiltersAndClose() {
   if (btn) btn.setAttribute('aria-expanded', 'false');
 }
 function loadVisual(){
-  const theme = localStorage.getItem('yamolod_theme') || 'light';
+  const theme = localStorage.getItem('yamolod_theme') || 'dark';
   document.documentElement.dataset.theme = theme;
   document.getElementById('themeIcon').textContent = theme === 'dark' ? '☾' : '☀';
   document.getElementById('themeText').textContent = theme === 'dark' ? 'Тёмная тема' : 'Светлая тема';
