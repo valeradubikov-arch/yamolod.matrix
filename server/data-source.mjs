@@ -148,11 +148,12 @@ function extractRows(data) {
 
 export function normalizeRow(row) {
   const normalizedRow = normalizeRawRow(row);
-  const startDate = firstValue(row, [
+  const startDate = firstValue(normalizedRow, [
     'Дата начала мероприятия / воспитательного часа',
     'Дата начала',
     'Дата',
     'Начало',
+    'Data_nachala',
     'date_start',
     'start_date',
     'dateRaw',
@@ -161,6 +162,7 @@ export function normalizeRow(row) {
     'Дата окончания мероприятия / воспитательного часа',
     'Дата окончания',
     'Окончание',
+    'Data_okonchania',
     'date_end',
     'end_date',
     'endDateRaw',
@@ -172,16 +174,20 @@ export function normalizeRow(row) {
     'Муниципальное образование',
     'Город',
     'Территория',
+    'Munitsipalnoe_obrazovanie',
+    'Proschadka',
     'place',
   ], ['муницип', 'образ']));
   const level = textValue(firstValue(normalizedRow, [
     'Уровень мероприятия / воспитательного часа',
     'Уровень',
+    'Uroven_meropriyatiya___vospitatelnogo_chasa',
     'level',
   ], ['уров']));
   const category = joinValue(firstValue(normalizedRow, [
     'Категория мероприятия / воспитательного часа',
     'Категория',
+    'Kategoriya_meropriyatiya___vospitatelnogo_chasa',
     'category',
   ], ['катег']));
   const title = textValue(firstValue(normalizedRow, [
@@ -193,6 +199,7 @@ export function normalizeRow(row) {
     'Проект',
     'Событие',
     'Название',
+    'Nazvanie_meropriyatiya___tema_vospitatelnogo_chasa',
     'title',
   ], ['назван', 'мероприят']));
 
@@ -203,7 +210,7 @@ export function normalizeRow(row) {
     updated_at: textValue(firstValue(normalizedRow, ['updated_at', 'Дата выгрузки', 'updatedAt'])),
     id: textValue(firstValue(normalizedRow, ['ID', 'id', 'source_id', '_id'])),
     title,
-    community: joinValue(firstValue(normalizedRow, ['КМФ / сообщество', 'КМФ/Сообщество', 'КМФ', 'Сообщество', 'Направление', 'community'])),
+    community: joinValue(firstValue(normalizedRow, ['КМФ / сообщество', 'КМФ/Сообщество', 'КМФ', 'Сообщество', 'Направление', 'KMF___soobschestvo', 'community'])),
     dateRaw: normalizeDate(startDate) || textValue(startDate),
     endDateRaw: normalizeDate(endDate) || textValue(endDate),
     level,
@@ -213,21 +220,22 @@ export function normalizeRow(row) {
       'Сумма доведённая на 01 января 2026 (в руб)',
       'Сумма доведённая 01.01.2026',
       'Общий бюджет',
+      'FYUS_Summa_dovedyonnaya_na_01_yanvarya_2026__v_rub_',
       'budget',
     ], ['бюджет']),
-    estimateRaw: firstValue(normalizedRow, ['Сумма согласованной сметы', 'Согласованная смета', 'estimate'], ['согласован', 'смет']),
-    balanceRaw: firstValue(normalizedRow, ['Остаток суммы сметы', 'Остаток', 'balance'], ['остат']),
-    fundingSource: joinValue(firstValue(normalizedRow, ['Источник финансирования', 'fundingSource'], ['источник', 'финанс'])),
-    travelSource: joinValue(firstValue(normalizedRow, ['Источник финансирования на проезд', 'travelSource'])),
-    travelAmountRaw: firstValue(normalizedRow, ['Сумма проезда', 'travelAmount']),
-    institution: joinValue(firstValue(normalizedRow, ['Ответственное учреждение', 'Учреждение', 'Организатор', 'institution'], ['учрежд'])),
-    holder: joinValue(firstValue(normalizedRow, ['Учреждение-держатель субсидии', 'holder'])),
-    owner: textValue(firstValue(normalizedRow, ['Ответственный', 'Отв. исполнитель', 'Ответственный исполнитель', 'owner'], ['ответствен'])),
-    department: textValue(firstValue(normalizedRow, ['Ответственный отдел', 'department'], ['отдел'])),
-    reachRaw: firstValue(normalizedRow, ['Планируемый охват', 'Охват', 'reach'], ['охват']),
+    estimateRaw: firstValue(normalizedRow, ['Сумма согласованной сметы', 'Согласованная смета', 'FYUS_Summa_soglasovannoy_smet', 'estimate'], ['согласован', 'смет']),
+    balanceRaw: firstValue(normalizedRow, ['Остаток суммы сметы', 'Остаток', 'FYUS_Ostatok_summ_smet', 'balance'], ['остат']),
+    fundingSource: joinValue(firstValue(normalizedRow, ['Источник финансирования', 'FYUS_Istochnik_finansirovaniya', 'fundingSource'], ['источник', 'финанс'])),
+    travelSource: joinValue(firstValue(normalizedRow, ['Источник финансирования на проезд', 'FYUS_Istochnik_finansirovaniya_na_proezd', 'travelSource'])),
+    travelAmountRaw: firstValue(normalizedRow, ['Сумма проезда', 'FYUS_Summa_raskhodov_na_proezd', 'travelAmount']),
+    institution: joinValue(firstValue(normalizedRow, ['Ответственное учреждение', 'Учреждение', 'Организатор', 'Otvetstvennoe_uchrezhdenie', 'institution'], ['учрежд'])),
+    holder: joinValue(firstValue(normalizedRow, ['Учреждение-держатель субсидии', 'FYUS_Uchrezhdenie_derzhatel_subsidii', 'holder'])),
+    owner: textValue(firstValue(normalizedRow, ['Ответственный', 'Отв. исполнитель', 'Ответственный исполнитель', 'Otvetstvenniy', 'owner'], ['ответствен'])),
+    department: textValue(firstValue(normalizedRow, ['Ответственный отдел', 'Otvetstvenniy_otdel', 'department'], ['отдел'])),
+    reachRaw: firstValue(normalizedRow, ['Планируемый охват', 'Охват', 'Planiruemiy_ohvat', 'Planoviy_ohvat', 'reach'], ['охват']),
     place,
-    format: textValue(firstValue(normalizedRow, ['Формат проведения', 'format'], ['формат'])),
-    isOutbound: isOutboundRow({ level, category, place, format: firstValue(normalizedRow, ['Формат проведения', 'format'], ['формат']) }),
+    format: textValue(firstValue(normalizedRow, ['Формат проведения', 'Format_provedeniya', 'format'], ['формат'])),
+    isOutbound: isOutboundRow({ level, category, place, format: firstValue(normalizedRow, ['Формат проведения', 'Format_provedeniya', 'format'], ['формат']) }),
   };
 }
 
