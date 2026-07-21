@@ -3215,7 +3215,8 @@ function toggleEventDetails(idx) {
 }
 
 function renderActivityRings() {
-  const total = allRows.length || 1;
+  const realTotal = allRows.length;
+  const total = realTotal || 1;
   const groups = [
     {name:'Федеральные', color:'var(--accent)', radius:82},
     {name:'Региональные', color:'var(--violet)', radius:60},
@@ -3226,15 +3227,15 @@ function renderActivityRings() {
       ? allRows.filter(r => !['Федеральные','Региональные','Муниципальные'].includes(r.levelNorm)).length
       : allRows.filter(r => r.levelNorm === g.name).length;
     const circumference = 2 * Math.PI * g.radius;
-    const progress = Math.max(0.02, Math.min(1, value / total));
+    const progress = realTotal ? Math.max(0.02, Math.min(1, value / total)) : 0;
     return Object.assign(g, {value, circumference, progress});
   });
   const rings = '<svg class="rings-svg" viewBox="0 0 210 210">' + groups.map(g =>
     '<circle class="ring-track" cx="105" cy="105" r="' + g.radius + '"></circle><circle class="ring-value ' + (g.className || '') + '" cx="105" cy="105" r="' + g.radius + '" stroke="' + g.color + '" stroke-dasharray="' + (g.circumference * g.progress).toFixed(1) + ' ' + g.circumference.toFixed(1) + '"></circle>'
-  ).join('') + '</svg><div class="rings-center">' + numberRu(total) + '<small>проектов</small></div>';
+  ).join('') + '</svg><div class="rings-center">' + numberRu(realTotal) + '<small>проектов</small></div>';
   document.getElementById('activityRings').innerHTML = rings;
   document.getElementById('activityRingStats').innerHTML = groups.map(g =>
-    '<div class="ring-stat"><span class="ring-dot" style="background:' + g.color + '"></span><div><div class="ring-name">' + g.name + '</div><div class="ring-caption">закрыто ' + numberRu(g.value) + ' из ' + numberRu(total) + '</div></div><div class="ring-count">' + numberRu(g.value) + '</div></div>'
+    '<div class="ring-stat"><span class="ring-dot" style="background:' + g.color + '"></span><div><div class="ring-name">' + g.name + '</div><div class="ring-caption">закрыто ' + numberRu(g.value) + ' из ' + numberRu(realTotal) + '</div></div><div class="ring-count">' + numberRu(g.value) + '</div></div>'
   ).join('');
 }
 

@@ -147,77 +147,87 @@ function extractRows(data) {
 }
 
 export function normalizeRow(row) {
+  const normalizedRow = normalizeRawRow(row);
   const startDate = firstValue(row, [
     'Дата начала мероприятия / воспитательного часа',
     'Дата начала',
     'Дата',
+    'Начало',
     'date_start',
     'start_date',
     'dateRaw',
-  ]);
-  const endDate = firstValue(row, [
+  ], ['дат', 'нач']);
+  const endDate = firstValue(normalizedRow, [
     'Дата окончания мероприятия / воспитательного часа',
     'Дата окончания',
+    'Окончание',
     'date_end',
     'end_date',
     'endDateRaw',
-  ]);
-  const place = joinValue(firstValue(row, [
+  ], ['дат', 'оконч']);
+  const place = joinValue(firstValue(normalizedRow, [
     'Прощадка',
     'Площадка',
     'Место проведения',
     'Муниципальное образование',
+    'Город',
+    'Территория',
     'place',
-  ]));
-  const level = textValue(firstValue(row, [
+  ], ['муницип', 'образ']));
+  const level = textValue(firstValue(normalizedRow, [
     'Уровень мероприятия / воспитательного часа',
     'Уровень',
     'level',
-  ]));
-  const category = joinValue(firstValue(row, [
+  ], ['уров']));
+  const category = joinValue(firstValue(normalizedRow, [
     'Категория мероприятия / воспитательного часа',
     'Категория',
     'category',
-  ]));
-  const title = textValue(firstValue(row, [
+  ], ['катег']));
+  const title = textValue(firstValue(normalizedRow, [
     'Название мероприятия / тема воспитательного часа',
     'Название мероприятия',
+    'Наименование мероприятия',
+    'Тема воспитательного часа',
     'Мероприятие',
+    'Проект',
+    'Событие',
     'Название',
     'title',
-  ]));
+  ], ['назван', 'мероприят']));
 
   return {
-    sourceRow: row,
-    source_id: textValue(firstValue(row, ['source_id', '_id', 'ID', 'id'])),
-    source_table: textValue(firstValue(row, ['source_table', 'table_name', 'Таблица'])),
-    updated_at: textValue(firstValue(row, ['updated_at', 'Дата выгрузки', 'updatedAt'])),
-    id: textValue(firstValue(row, ['ID', 'id', 'source_id', '_id'])),
+    sourceRow: normalizedRow,
+    source_id: textValue(firstValue(normalizedRow, ['source_id', '_id', 'ID', 'id'])),
+    source_table: textValue(firstValue(normalizedRow, ['source_table', 'table_name', 'Таблица', 'Источник'])),
+    updated_at: textValue(firstValue(normalizedRow, ['updated_at', 'Дата выгрузки', 'updatedAt'])),
+    id: textValue(firstValue(normalizedRow, ['ID', 'id', 'source_id', '_id'])),
     title,
-    community: joinValue(firstValue(row, ['КМФ / сообщество', 'КМФ/Сообщество', 'КМФ', 'community'])),
+    community: joinValue(firstValue(normalizedRow, ['КМФ / сообщество', 'КМФ/Сообщество', 'КМФ', 'Сообщество', 'Направление', 'community'])),
     dateRaw: normalizeDate(startDate) || textValue(startDate),
     endDateRaw: normalizeDate(endDate) || textValue(endDate),
     level,
     category,
-    budgetRaw: firstValue(row, [
+    budgetRaw: firstValue(normalizedRow, [
       'Бюджет',
       'Сумма доведённая на 01 января 2026 (в руб)',
       'Сумма доведённая 01.01.2026',
+      'Общий бюджет',
       'budget',
-    ]),
-    estimateRaw: firstValue(row, ['Сумма согласованной сметы', 'Согласованная смета', 'estimate']),
-    balanceRaw: firstValue(row, ['Остаток суммы сметы', 'Остаток', 'balance']),
-    fundingSource: joinValue(firstValue(row, ['Источник финансирования', 'fundingSource'])),
-    travelSource: joinValue(firstValue(row, ['Источник финансирования на проезд', 'travelSource'])),
-    travelAmountRaw: firstValue(row, ['Сумма проезда', 'travelAmount']),
-    institution: joinValue(firstValue(row, ['Ответственное учреждение', 'Учреждение', 'institution'])),
-    holder: joinValue(firstValue(row, ['Учреждение-держатель субсидии', 'holder'])),
-    owner: textValue(firstValue(row, ['Ответственный', 'Отв. исполнитель', 'Ответственный исполнитель', 'owner'])),
-    department: textValue(firstValue(row, ['Ответственный отдел', 'department'])),
-    reachRaw: firstValue(row, ['Планируемый охват', 'Охват', 'reach']),
+    ], ['бюджет']),
+    estimateRaw: firstValue(normalizedRow, ['Сумма согласованной сметы', 'Согласованная смета', 'estimate'], ['согласован', 'смет']),
+    balanceRaw: firstValue(normalizedRow, ['Остаток суммы сметы', 'Остаток', 'balance'], ['остат']),
+    fundingSource: joinValue(firstValue(normalizedRow, ['Источник финансирования', 'fundingSource'], ['источник', 'финанс'])),
+    travelSource: joinValue(firstValue(normalizedRow, ['Источник финансирования на проезд', 'travelSource'])),
+    travelAmountRaw: firstValue(normalizedRow, ['Сумма проезда', 'travelAmount']),
+    institution: joinValue(firstValue(normalizedRow, ['Ответственное учреждение', 'Учреждение', 'Организатор', 'institution'], ['учрежд'])),
+    holder: joinValue(firstValue(normalizedRow, ['Учреждение-держатель субсидии', 'holder'])),
+    owner: textValue(firstValue(normalizedRow, ['Ответственный', 'Отв. исполнитель', 'Ответственный исполнитель', 'owner'], ['ответствен'])),
+    department: textValue(firstValue(normalizedRow, ['Ответственный отдел', 'department'], ['отдел'])),
+    reachRaw: firstValue(normalizedRow, ['Планируемый охват', 'Охват', 'reach'], ['охват']),
     place,
-    format: textValue(firstValue(row, ['Формат проведения', 'format'])),
-    isOutbound: isOutboundRow({ level, category, place, format: row['Формат проведения'] }),
+    format: textValue(firstValue(normalizedRow, ['Формат проведения', 'format'], ['формат'])),
+    isOutbound: isOutboundRow({ level, category, place, format: firstValue(normalizedRow, ['Формат проведения', 'format'], ['формат']) }),
   };
 }
 
@@ -248,6 +258,8 @@ function buildDiagnostics(rows, loaded, rawRows = rows) {
     missingDate,
     sourceError: loaded.sourceError || '',
     rawShape: describeShape(loaded.data),
+    sampleRawKeys: sampleKeys(rawRows),
+    sampleRawPreview: samplePreview(rawRows),
   };
 }
 
@@ -255,13 +267,52 @@ function getDatasetUpdatedAt(data, rows) {
   return data?.updatedAt || data?.updated_at || rows.find(row => row.updated_at)?.updated_at || '';
 }
 
-function firstValue(row, keys) {
+function normalizeRawRow(row) {
+  if (row && typeof row === 'object' && !Array.isArray(row)) {
+    if (row.values && typeof row.values === 'object') return row.values;
+    if (row.data && typeof row.data === 'object' && !Array.isArray(row.data)) return row.data;
+    if (row.fields && typeof row.fields === 'object' && !Array.isArray(row.fields)) return row.fields;
+  }
+
+  return row;
+}
+
+function firstValue(row, keys, fuzzyParts = []) {
   for (const key of keys) {
     if (row && Object.prototype.hasOwnProperty.call(row, key) && row[key] !== null && row[key] !== undefined && row[key] !== '') {
       return row[key];
     }
   }
+
+  const fuzzyKeys = [...keys.map(normalizeKey).filter(Boolean), normalizeKey(fuzzyParts.join(' '))].filter(Boolean);
+  const entries = Object.entries(row || {});
+
+  for (const [key, value] of entries) {
+    if (value === null || value === undefined || value === '') continue;
+    const normalized = normalizeKey(key);
+    if (fuzzyKeys.some(candidate => normalized === candidate || normalized.includes(candidate) || candidate.includes(normalized))) {
+      return value;
+    }
+  }
+
+  if (fuzzyParts.length) {
+    for (const [key, value] of entries) {
+      if (value === null || value === undefined || value === '') continue;
+      const normalized = normalizeKey(key);
+      if (fuzzyParts.every(part => normalized.includes(normalizeKey(part)))) {
+        return value;
+      }
+    }
+  }
+
   return '';
+}
+
+function normalizeKey(key) {
+  return String(key || '')
+    .toLowerCase()
+    .replace(/ё/g, 'е')
+    .replace(/[^a-zа-я0-9]+/g, '');
 }
 
 function findLargestObjectArray(value, seen = new Set()) {
@@ -304,6 +355,26 @@ function describeShape(data) {
     keys,
     arrays,
   };
+}
+
+function sampleKeys(rows) {
+  const sample = rows.find(row => row && typeof row === 'object');
+  if (!sample) return [];
+  const normalized = normalizeRawRow(sample);
+  return Object.keys(normalized || {}).slice(0, 40);
+}
+
+function samplePreview(rows) {
+  const sample = rows.find(row => row && typeof row === 'object');
+  if (!sample) return null;
+  const normalized = normalizeRawRow(sample);
+  const preview = {};
+
+  for (const [key, value] of Object.entries(normalized || {}).slice(0, 12)) {
+    preview[key] = Array.isArray(value) ? value.slice(0, 3) : String(value ?? '').slice(0, 120);
+  }
+
+  return preview;
 }
 
 function joinValue(value) {
