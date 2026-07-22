@@ -2,7 +2,7 @@
 
 ## Что уже подготовлено
 
-- `public/index.html` — дашборд без зависимости от Google Apps Script.
+- `public/index.html` — frontend-дашборд.
 - `server/index.mjs` — Node.js backend и статический сервер.
 - `server/data-source.mjs` — загрузка JSON с Яндекс.Диска и нормализация строк Loginom.
 - `php/api/events.php` — запасной PHP endpoint, если хостинг будет без Node.js.
@@ -17,6 +17,8 @@ Loginom
   -> frontend дашборда
 ```
 
+Исходные таблицы ведутся во внешней системе, затем обрабатываются в Loginom. Дашборд не подключается напрямую к исходным таблицам: он получает уже подготовленную JSON-выгрузку через backend.
+
 ## Переменные окружения
 
 Для боевой версии:
@@ -27,6 +29,7 @@ YANDEX_DISK_PATH=/Loginom/Сводная таблица.json
 CACHE_SECONDS=0
 HOST=127.0.0.1
 PORT=3000
+ALLOW_LOCAL_FALLBACK=0
 ```
 
 Для теста публичной ссылки можно не задавать `YANDEX_DISK_TOKEN`; тогда backend попробует:
@@ -75,12 +78,19 @@ http://localhost:3000/api/events
 {
   "ok": true,
   "source": "yandex-disk-private",
-  "rows": 642,
-  "updatedAt": "2026-07-14T..."
+  "rows": 687,
+  "updatedAt": "2026-07-22T03:16:07Z",
+  "meta": {
+    "recordCount": 687,
+    "rejectedRecordCount": 0,
+    "isStale": false,
+    "sourceStatus": "success"
+  }
 }
 ```
 
 Если `source` равен `local-fallback`, значит сервер не смог достучаться до Яндекс.Диска и взял тестовый локальный JSON.
+В боевой версии это поведение должно быть выключено: `ALLOW_LOCAL_FALLBACK=0`.
 
 ## Минимальные требования к JSON из Loginom
 

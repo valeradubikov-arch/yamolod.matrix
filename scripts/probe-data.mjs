@@ -8,8 +8,8 @@ try {
   console.log(JSON.stringify({
     ok: true,
     source: data.source,
-    sourcePath: data.sourcePath,
     updatedAt: data.updatedAt,
+    meta: data.meta,
     rows: data.rows.length,
     diagnostics: data.diagnostics,
     firstRow: {

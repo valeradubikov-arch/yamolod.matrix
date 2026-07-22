@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 
 const DEFAULT_DISK_PATH = '/Loginom/Сводная таблица.json';
 const DEFAULT_PUBLIC_URL = 'https://disk.yandex.ru/d/X2LAAlT4PyzKCA';
+const SCHEMA_VERSION = '1';
 
 export function getConfig(env = process.env) {
   return {
@@ -10,20 +11,39 @@ export function getConfig(env = process.env) {
     publicUrl: env.YANDEX_PUBLIC_URL || DEFAULT_PUBLIC_URL,
     localJsonPath: env.LOCAL_JSON_PATH || new URL('../data/sample-events.json', import.meta.url).pathname,
     cacheSeconds: numberOrDefault(env.CACHE_SECONDS, 0),
+    allowLocalFallback: ['1', 'true', 'yes'].includes(String(env.ALLOW_LOCAL_FALLBACK || '').toLowerCase()),
   };
 }
 
 export async function loadDashboardData(config = getConfig(), options = {}) {
+  const fetchedAt = new Date().toISOString();
   const loaded = await loadRawJson(config, options);
   const rawRows = extractRows(loaded.data);
-  const rows = rawRows.map(normalizeRow).filter(row => row.title);
-  const diagnostics = buildDiagnostics(rows, loaded, rawRows);
+  if (!rawRows.length && !hasExplicitRowsContainer(loaded.data)) {
+    throw new Error('JSON structure does not contain an events array');
+  }
+  const validation = validateAndNormalizeRows(rawRows);
+  const diagnostics = buildDiagnostics(validation.rows, loaded, rawRows, validation.rejectedRecords);
+  const processedAt = new Date().toISOString();
+  const sourceUpdatedAt = getDatasetUpdatedAt(loaded.data, validation.rows) || loaded.updatedAt || '';
+  const isFallback = loaded.source === 'local-fallback';
 
   return {
-    updatedAt: getDatasetUpdatedAt(loaded.data, rows) || new Date().toISOString(),
+    ok: true,
+    updatedAt: sourceUpdatedAt || processedAt,
     source: loaded.source,
-    sourcePath: loaded.sourcePath,
-    rows,
+    rows: validation.rows,
+    data: validation.rows,
+    meta: {
+      sourceUpdatedAt: sourceUpdatedAt || null,
+      fetchedAt,
+      processedAt,
+      recordCount: validation.rows.length,
+      rejectedRecordCount: validation.rejectedRecords.length,
+      isStale: false,
+      sourceStatus: isFallback ? 'fallback' : 'success',
+      schemaVersion: SCHEMA_VERSION,
+    },
     diagnostics,
   };
 }
@@ -41,6 +61,7 @@ async function loadRawJson(config, options) {
     try {
       return await loadPublicDiskJson(config.publicUrl);
     } catch (error) {
+      if (!config.allowLocalFallback) throw error;
       const local = await loadLocalJson(config.localJsonPath);
       return {
         ...local,
@@ -78,6 +99,7 @@ async function loadPrivateDiskJson(config) {
     data,
     source: 'yandex-disk-private',
     sourcePath: config.diskPath,
+    updatedAt: getDatasetUpdatedAt(data, []),
   };
 }
 
@@ -105,6 +127,7 @@ async function loadPublicDiskJson(publicUrl) {
     data,
     source: 'yandex-disk-public',
     sourcePath: publicUrl,
+    updatedAt: getDatasetUpdatedAt(data, []),
   };
 }
 
@@ -136,7 +159,7 @@ async function loadLocalJson(path) {
   };
 }
 
-function extractRows(data) {
+export function extractRows(data) {
   if (Array.isArray(data)) return data;
 
   for (const key of ['rows', 'data', 'items', 'result', 'records', 'events']) {
@@ -144,6 +167,58 @@ function extractRows(data) {
   }
 
   return findLargestObjectArray(data);
+}
+
+function hasExplicitRowsContainer(data) {
+  if (Array.isArray(data)) return true;
+  return ['rows', 'data', 'items', 'result', 'records', 'events']
+    .some(key => Array.isArray(data?.[key]));
+}
+
+export function validateAndNormalizeRows(rawRows) {
+  const rows = [];
+  const rejectedRecords = [];
+  const seenIds = new Map();
+
+  rawRows.forEach((rawRow, index) => {
+    const problems = validateRawRow(rawRow);
+
+    if (!problems.length) {
+      const row = normalizeRow(rawRow);
+      if (!row.title) problems.push('missing_title');
+      if (!row.source_id && !row.id) problems.push('missing_id');
+      if (row.source_id && seenIds.has(row.source_id)) problems.push('duplicate_source_id');
+      if (row.source_id) seenIds.set(row.source_id, index);
+
+      if (!problems.length) {
+        rows.push(row);
+        return;
+      }
+    }
+
+    rejectedRecords.push({
+      index,
+      id: textValue(firstValue(normalizeRawRow(rawRow), ['source_id', '_id', 'ID', 'id'])),
+      reasons: problems,
+    });
+  });
+
+  return { rows, rejectedRecords };
+}
+
+function validateRawRow(rawRow) {
+  const problems = [];
+  if (!rawRow || typeof rawRow !== 'object' || Array.isArray(rawRow)) {
+    problems.push('row_is_not_object');
+    return problems;
+  }
+
+  const row = normalizeRawRow(rawRow);
+  if (!row || typeof row !== 'object' || Array.isArray(row)) {
+    problems.push('row_payload_is_not_object');
+  }
+
+  return problems;
 }
 
 export function normalizeRow(row) {
@@ -202,6 +277,8 @@ export function normalizeRow(row) {
     'Nazvanie_meropriyatiya___tema_vospitatelnogo_chasa',
     'title',
   ], ['назван', 'мероприят']));
+  const status = textValue(firstValue(normalizedRow, ['Status', 'Статус', 'status'], ['статус']));
+  const coorganizer = joinValue(firstValue(normalizedRow, ['Соорганизатор', 'Soorganizator', 'coorganizer']));
 
   return {
     sourceRow: normalizedRow,
@@ -210,6 +287,7 @@ export function normalizeRow(row) {
     updated_at: textValue(firstValue(normalizedRow, ['updated_at', 'Дата выгрузки', 'updatedAt'])),
     id: textValue(firstValue(normalizedRow, ['ID', 'id', 'source_id', '_id'])),
     title,
+    status,
     community: joinValue(firstValue(normalizedRow, ['КМФ / сообщество', 'КМФ/Сообщество', 'КМФ', 'Сообщество', 'Направление', 'KMF___soobschestvo', 'community'])),
     dateRaw: normalizeDate(startDate) || textValue(startDate),
     endDateRaw: normalizeDate(endDate) || textValue(endDate),
@@ -230,16 +308,21 @@ export function normalizeRow(row) {
     travelAmountRaw: firstValue(normalizedRow, ['Сумма проезда', 'FYUS_Summa_raskhodov_na_proezd', 'travelAmount']),
     institution: joinValue(firstValue(normalizedRow, ['Ответственное учреждение', 'Учреждение', 'Организатор', 'Otvetstvennoe_uchrezhdenie', 'institution'], ['учрежд'])),
     holder: joinValue(firstValue(normalizedRow, ['Учреждение-держатель субсидии', 'FYUS_Uchrezhdenie_derzhatel_subsidii', 'holder'])),
+    coorganizer,
     owner: textValue(firstValue(normalizedRow, ['Ответственный', 'Отв. исполнитель', 'Ответственный исполнитель', 'Otvetstvenniy', 'owner'], ['ответствен'])),
     department: textValue(firstValue(normalizedRow, ['Ответственный отдел', 'Otvetstvenniy_otdel', 'department'], ['отдел'])),
     reachRaw: firstValue(normalizedRow, ['Планируемый охват', 'Охват', 'Planiruemiy_ohvat', 'Planoviy_ohvat', 'reach'], ['охват']),
     place,
     format: textValue(firstValue(normalizedRow, ['Формат проведения', 'Format_provedeniya', 'format'], ['формат'])),
+    estimateLink: textValue(firstValue(normalizedRow, ['Ссылка на смету', 'FYUS_Sslka_na_smetu', 'estimateLink'])),
+    estimateStatus: textValue(firstValue(normalizedRow, ['Статус согласования смет', 'FYUS_Status_soglasovaniya_smet', 'estimateStatus'])),
+    tenderStatus: textValue(firstValue(normalizedRow, ['Статус входа на торги', 'FYUS_Status_vkhoda_na_torgi', 'tenderStatus'])),
+    contractFormat: textValue(firstValue(normalizedRow, ['Формат заключения договоров', 'FYUS_Format_zaklyucheniya_dogovorov', 'contractFormat'])),
     isOutbound: isOutboundRow({ level, category, place, format: firstValue(normalizedRow, ['Формат проведения', 'Format_provedeniya', 'format'], ['формат']) }),
   };
 }
 
-function buildDiagnostics(rows, loaded, rawRows = rows) {
+function buildDiagnostics(rows, loaded, rawRows = rows, rejectedRecords = []) {
   const ids = new Set();
   const duplicates = [];
   let missingTitle = 0;
@@ -264,6 +347,7 @@ function buildDiagnostics(rows, loaded, rawRows = rows) {
     duplicateCount: duplicates.length,
     missingTitle,
     missingDate,
+    rejectedRecords: rejectedRecords.slice(0, 50),
     sourceError: loaded.sourceError || '',
     rawShape: describeShape(loaded.data),
     sampleRawKeys: sampleKeys(rawRows),
@@ -286,19 +370,19 @@ function normalizeRawRow(row) {
 }
 
 function firstValue(row, keys, fuzzyParts = []) {
+  const exactKeys = keys.map(normalizeKey).filter(Boolean);
   for (const key of keys) {
     if (row && Object.prototype.hasOwnProperty.call(row, key) && row[key] !== null && row[key] !== undefined && row[key] !== '') {
       return row[key];
     }
   }
 
-  const fuzzyKeys = [...keys.map(normalizeKey).filter(Boolean), normalizeKey(fuzzyParts.join(' '))].filter(Boolean);
   const entries = Object.entries(row || {});
 
   for (const [key, value] of entries) {
     if (value === null || value === undefined || value === '') continue;
     const normalized = normalizeKey(key);
-    if (fuzzyKeys.some(candidate => normalized === candidate || normalized.includes(candidate) || candidate.includes(normalized))) {
+    if (exactKeys.includes(normalized)) {
       return value;
     }
   }

@@ -12,6 +12,8 @@ const host = process.env.HOST || '127.0.0.1';
 const config = getConfig();
 
 let cache = null;
+let lastSuccessfulData = null;
+let inFlightLoad = null;
 
 const server = createServer(async (req, res) => {
   try {
@@ -26,9 +28,9 @@ const server = createServer(async (req, res) => {
       return sendJson(res, {
         ok: true,
         source: data.source,
-        sourcePath: data.sourcePath,
         updatedAt: data.updatedAt,
         rows: data.rows.length,
+        meta: data.meta,
         diagnostics: data.diagnostics,
       });
     }
@@ -56,12 +58,48 @@ async function getData(forceRefresh = false) {
     return cache.data;
   }
 
-  const data = await loadDashboardData(config);
-  cache = {
-    createdAt: now,
-    data,
-  };
-  return data;
+  if (!forceRefresh && inFlightLoad) return inFlightLoad;
+
+  inFlightLoad = loadDashboardData(config)
+    .then(data => {
+      cache = {
+        createdAt: Date.now(),
+        data,
+      };
+      lastSuccessfulData = data;
+      return data;
+    })
+    .catch(error => {
+      if (lastSuccessfulData) {
+        const staleData = {
+          ...lastSuccessfulData,
+          ok: true,
+          meta: {
+            ...(lastSuccessfulData.meta || {}),
+            isStale: true,
+            sourceStatus: 'source_unavailable',
+            fetchedAt: new Date().toISOString(),
+            processedAt: new Date().toISOString(),
+          },
+          diagnostics: {
+            ...(lastSuccessfulData.diagnostics || {}),
+            sourceError: error.message,
+          },
+        };
+        cache = {
+          createdAt: Date.now(),
+          data: staleData,
+        };
+        return staleData;
+      }
+
+      throw error;
+    })
+    .finally(() => {
+      inFlightLoad = null;
+    });
+
+  return inFlightLoad;
 }
 
 function sendJson(res, data, status = 200) {

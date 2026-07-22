@@ -4253,6 +4253,7 @@
         <div>
           <h1>Событийная матрица</h1>
           <div class="subtitle">Школы Ямолод</div>
+          <div class="subtitle" id="dataFreshness" style="margin-top:6px;font-size:12px">Загрузка данных...</div>
         </div>
       </div>
       <div class="search-wrap">
@@ -4266,7 +4267,7 @@
     </div>
 
     <section class="kpis" id="kpis">
-      <div class="loading card">Загрузка данных из Google Таблицы...</div>
+      <div class="loading card">Загрузка данных...</div>
     </section>
 
 
@@ -4283,10 +4284,10 @@
       <section class="card panel" id="financeSection">
         <div class="panel-title"><h2>Исполнение договоров</h2><a class="link" id="contractsSummary">2026 год</a></div>
         <div class="subtitle">Общий бюджет</div>
-        <div class="finance-number" id="totalFinance">0 ₽</div>
+        <div class="finance-number" id="totalFinance">—</div>
         <div style="display:flex;justify-content:space-between;margin-bottom:10px;color:var(--muted);font-size:13px">
-          <span>Согласовано <b id="approvedFinance" style="color:var(--text)">0 ₽</b></span>
-          <span>Остаток <b id="balanceFinance" style="color:var(--text)">0 ₽</b></span>
+          <span>Согласовано <b id="approvedFinance" style="color:var(--text)">—</b></span>
+          <span>Остаток <b id="balanceFinance" style="color:var(--text)">—</b></span>
         </div>
         <div class="bar"><span id="financeBar"></span></div>
       </section>
@@ -4383,6 +4384,7 @@ let listMode = 'cards';
 let selectedCalendarDay = null;
 let selectedCalendarMonth = null;
 let calendarView = 'month';
+let dataMeta = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   loadVisual();
@@ -4397,7 +4399,7 @@ window.addEventListener('resize', () => {
 });
 
 function reloadData() {
-  document.getElementById('kpis').innerHTML = '<div class="loading card">Обновляю данные...</div>';
+  setLoadingState();
   fetch('/api/events', { cache: 'no-store' })
     .then(response => {
       if (!response.ok) {
@@ -4407,14 +4409,48 @@ function reloadData() {
     })
     .then(initApp)
     .catch(err => {
-      document.getElementById('kpis').innerHTML = `<div class="card loading">Ошибка загрузки: ${escapeHtml(err.message || err)}</div>`;
+      setErrorState(err);
     });
 }
 
 function initApp(payload) {
-  allRows = (payload.rows || []).map(enrichRow).filter(r => r.title && !String(r.title).toLowerCase().includes('актуально на'));
+  dataMeta = payload.meta || null;
+  allRows = ((payload.rows || payload.data || [])).map(enrichRow).filter(r => r.title && !String(r.title).toLowerCase().includes('актуально на'));
+  renderDataFreshness();
   initFilters();
   applyFilters();
+}
+
+function setLoadingState() {
+  document.getElementById('dataFreshness').textContent = 'Загрузка данных...';
+  document.getElementById('kpis').innerHTML = Array.from({ length: 6 }).map(() =>
+    '<div class="card kpi loading"><div><div class="kpi-title">Загрузка</div><div class="kpi-value">—</div><div class="kpi-sub">получаем данные</div></div></div>'
+  ).join('');
+}
+
+function setErrorState(error) {
+  document.getElementById('dataFreshness').textContent = 'Данные временно недоступны';
+  document.getElementById('kpis').innerHTML = `
+    <div class="card loading" style="grid-column:1/-1">
+      Не удалось загрузить данные. Проверьте соединение и попробуйте ещё раз.
+      <button class="select-button" style="margin-left:12px" onclick="reloadData()">Повторить</button>
+    </div>`;
+  console.error('Dashboard data load failed:', error);
+}
+
+function renderDataFreshness() {
+  const el = document.getElementById('dataFreshness');
+  if (!el) return;
+  if (!dataMeta) {
+    el.textContent = 'Данные загружены';
+    return;
+  }
+
+  const dateText = formatDateTime(dataMeta.sourceUpdatedAt || dataMeta.processedAt || dataMeta.fetchedAt);
+  const rejected = Number(dataMeta.rejectedRecordCount || 0);
+  const stale = dataMeta.isStale ? ' · источник временно недоступен, показана последняя успешная версия' : '';
+  const partial = rejected ? ` · ${rejected} записей отклонено` : '';
+  el.textContent = dateText ? `Данные обновлены: ${dateText}${partial}${stale}` : `Данные загружены${partial}${stale}`;
 }
 
 function enrichRow(r) {
@@ -5079,6 +5115,18 @@ function parseNumber(v) {
   const s = String(v || '').replace(/\s/g,'').replace(',', '.').replace(/[^\d.]/g, '');
   const n = Number(s);
   return Number.isFinite(n) ? n : 0;
+}
+function formatDateTime(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return new Intl.DateTimeFormat('ru-RU', {
+    day:'numeric',
+    month:'long',
+    year:'numeric',
+    hour:'2-digit',
+    minute:'2-digit'
+  }).format(date);
 }
 function numberRu(n) { return new Intl.NumberFormat('ru-RU', {maximumFractionDigits:0}).format(n || 0); }
 function getPlace(r) { return trimSpaces(r.place || r.location || r.city || r.municipality || r.country || ''); }

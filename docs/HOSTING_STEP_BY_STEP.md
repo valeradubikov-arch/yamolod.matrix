@@ -23,6 +23,7 @@
 ```text
 HOST=0.0.0.0
 CACHE_SECONDS=60
+ALLOW_LOCAL_FALLBACK=0
 YANDEX_DISK_PATH=/Loginom/Сводная таблица.json
 YANDEX_PUBLIC_URL=https://disk.yandex.ru/d/X2LAAlT4PyzKCA
 YANDEX_DISK_TOKEN=реальный_oauth_токен
@@ -46,13 +47,19 @@ https://ваш-сайт/api/status
 {
   "ok": true,
   "source": "yandex-disk-private",
-  "rows": 642
+  "rows": 687,
+  "meta": {
+    "recordCount": 687,
+    "rejectedRecordCount": 0,
+    "sourceStatus": "success"
+  }
 }
 ```
 
 Если `source` равен `yandex-disk-public`, значит работает публичная ссылка.
 
 Если `source` равен `local-fallback`, значит хостинг не смог скачать JSON из Яндекса и взял тестовые данные.
+В боевой версии тестовый fallback должен быть выключен через `ALLOW_LOCAL_FALLBACK=0`, чтобы ошибка источника не выглядела как реальные данные.
 
 ## Подключение домена
 
